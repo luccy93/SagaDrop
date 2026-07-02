@@ -1,0 +1,2 @@
+/* App-level styles reset — SagaDrop uses index.css tokens */
+.App { min-height: 100vh; background: var(--saga-bg); }

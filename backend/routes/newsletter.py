@@ -1,0 +1,17 @@
+from fastapi import APIRouter
+
+from models import NewsletterInput, NewsletterEntry
+from database import db
+
+router = APIRouter()
+
+
+@router.post("/newsletter")
+async def newsletter(inp: NewsletterInput):
+    entry = NewsletterEntry(email=inp.email)
+    await db.newsletter.update_one(
+        {"email": entry.email},
+        {"$setOnInsert": entry.model_dump()},
+        upsert=True,
+    )
+    return {"ok": True, "message": "Welcome to SagaDrop."}

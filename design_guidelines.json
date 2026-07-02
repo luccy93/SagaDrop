@@ -1,0 +1,149 @@
+{
+  "project_name": "SagaDrop",
+  "brand_tagline": "Every Story Begins Here.",
+  "theme": "light",
+  "archetype": "Hybrid: Archetype 5 (Luxury) & Archetype 4 (Swiss & High-Contrast)",
+  "design_philosophy": "Fullscreen cinematic hero, Editorial typography, Large whitespace, Premium product presentation, Minimal luxury UI, White background, Black typography, Red accent color (#D90429), Large CTA buttons, Fullscreen sections, Scroll storytelling, Sticky floating header, Premium mobile-first layout. Mimics high-fashion editorial e-commerce but for books.",
+  "color_palette": {
+    "background": "#FFFFFF",
+    "surface": "#F6F6F6",
+    "primary_text": "#0A0A0A",
+    "secondary_text": "#555555",
+    "accent": "#D90429",
+    "border": "#E5E5E5"
+  },
+  "typography": {
+    "heading_font": "Playfair Display",
+    "heading_fallback": "serif",
+    "body_font": "Outfit",
+    "body_fallback": "sans-serif",
+    "rules": {
+      "h1": "text-5xl md:text-6xl font-black tracking-tighter leading-none text-[#0A0A0A]",
+      "h2": "text-3xl md:text-4xl font-bold tracking-tight text-[#0A0A0A]",
+      "h3": "text-xl md:text-2xl font-semibold tracking-tight text-[#0A0A0A]",
+      "body": "text-base leading-relaxed text-[#555555]",
+      "label": "text-xs uppercase tracking-[0.2em] font-semibold text-[#0A0A0A]",
+      "button": "text-sm md:text-base font-semibold tracking-wide"
+    },
+    "google_fonts_url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,800;0,900;1,400&display=swap"
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous Spacing Philosophy. Utilize large whitespace to evoke luxury.",
+    "section_padding": "py-20 md:py-32",
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "grid_gap": "gap-8 md:gap-16",
+    "layout_modes": {
+      "product_grid": "Asymmetrical masonry or bento grid with varying span sizes to break standard e-commerce monotony.",
+      "editorial_sections": "Large text columns paired with massive offset imagery."
+    }
+  },
+  "motion_and_interactions": {
+    "scroll_engine": "Lenis (Mandatory for smooth, momentum-based scrolling)",
+    "animations_library": "Framer Motion",
+    "hero_3d_engine": "React Three Fiber + Drei (three, @react-three/fiber, @react-three/drei)",
+    "effects": [
+      "Magnetic buttons on hover",
+      "Text stagger reveals on scroll",
+      "Parallax images in editorial sections",
+      "Smooth page transitions",
+      "Hover lift and subtle drop-shadow on product cards"
+    ]
+  },
+  "component_guidelines": {
+    "navigation": {
+      "style": "Sticky floating header, Glassmorphism (Crystal clear, backdrop-blur-xl, bg-white/80, 1px subtle bottom border border-black/5)",
+      "layout": "Logo left, Hamburger menu / Links center, Search/Wishlist/Cart/Profile right."
+    },
+    "hero": {
+      "style": "Fullscreen (h-screen). 3D React Three Fiber scene.",
+      "visuals": "Ancient book opening, pages turning, fantasy castle emerging, paper particles, magic smoke, cinematic depth of field, white luxury background.",
+      "content": "Headline: 'EVERY STORY BEGINS HERE', Subheading: 'AI Powered Story Marketplace', CTAs: 'Explore Books', 'Customize Your Book', Scroll indicator at bottom."
+    },
+    "book_cards": {
+      "style": "Flat, minimal, large cover focus. No generic box-shadows. 1px solid border on hover.",
+      "layout": "Cover image (aspect-[2/3] or 3/4), Title (Playfair Display, tight), Author (Outfit, small), Price (Outfit, Bold), Rating, and 'Quick View'/'Add to Cart' appearing on hover overlay."
+    },
+    "buttons": {
+      "primary": "bg-[#D90429] text-white hover:bg-[#B00320] transition-colors rounded-none px-8 py-4",
+      "secondary": "bg-[#0A0A0A] text-white hover:bg-[#333333] transition-colors rounded-none px-8 py-4",
+      "outline": "border border-[#0A0A0A] text-[#0A0A0A] hover:bg-[#0A0A0A] hover:text-white transition-colors rounded-none px-8 py-4"
+    },
+    "forms_and_inputs": {
+      "style": "Shadcn based. Minimalist lines. border-b-2 border-[#E5E5E5] focus:border-[#D90429] rounded-none bg-transparent."
+    }
+  },
+  "sections_required": [
+    "Hero (3D R3F)",
+    "Trending Books (Asymmetrical grid)",
+    "Categories (Fantasy, Mystery, Romance, Sci-Fi, Adventure, Horror, Classics, Children, Manga)",
+    "AI Book Recommendation Studio (Mood-based interface)",
+    "Book Customizer (Live 3D preview, Cover material, Foil, AI generated cover)",
+    "Collections (Editor's Picks, New Releases, Award Winners)",
+    "Authors (Large premium portrait cards)",
+    "Reader Reviews (Editorial review layout)",
+    "Newsletter (High contrast section)",
+    "Footer (Massive typography CTA, deep padding)"
+  ],
+  "image_urls": {
+    "vintage_books": [
+      {
+        "url": "https://images.unsplash.com/photo-1734127317364-c0366298e048?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNzl8MHwxfHNlYXJjaHw0fHxiZWF1dGlmdWwlMjB2aW50YWdlJTIwYm9vayUyMGNvdmVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Brown vintage book"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1755543832265-aa4a6b8c1414?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNzl8MHwxfHNlYXJjaHwzfHxiZWF1dGlmdWwlMjB2aW50YWdlJTIwYm9vayUyMGNvdmVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Ornate leather book cover with gold details"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1755541608494-5c02cf56e1f4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNzl8MHwxfHNlYXJjaHwyfHxiZWF1dGlmdWwlMjB2aW50YWdlJTIwYm9vayUyMGNvdmVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Ornate gold floral pattern"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1755545730104-3cb4545282b1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNzl8MHwxfHNlYXJjaHwxfHxiZWF1dGlmdWwlMjB2aW50YWdlJTIwYm9vayUyMGNvdmVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Red leather with gold border"
+      }
+    ],
+    "modern_books": [
+      {
+        "url": "https://images.unsplash.com/photo-1549298222-1c31e8915347?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwzfHxtb2Rlcm4lMjBtaW5pbWFsJTIwYm9vayUyMGFlc3RoZXRpY3xlbnwwfHx8fDE3ODI5OTQ2NjZ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Opened minimal magazine/book"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1531347058246-6dfef49b7b7b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBtaW5pbWFsJTIwYm9vayUyMGFlc3RoZXRpY3xlbnwwfHx8fDE3ODI5OTQ2NjZ8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Clipped book page, editorial layout"
+      }
+    ],
+    "authors": [
+      {
+        "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwxfHxwb3J0cmFpdCUyMG9mJTIwYXV0aG9yJTIwd3JpdGVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Grayscale author portrait (female)"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1618077360395-f3068be8e001?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwzfHxwb3J0cmFpdCUyMG9mJTIwYXV0aG9yJTIwd3JpdGVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Male author portrait with glasses"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1600188768149-f27db3bc6ef9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHw0fHxwb3J0cmFpdCUyMG9mJTIwYXV0aG9yJTIwd3JpdGVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Author writing at desk"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1504257432389-52343af06ae3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwyfHxwb3J0cmFpdCUyMG9mJTIwYXV0aG9yJTIwd3JpdGVyfGVufDB8fHx8MTc4Mjk5NDY2Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Grayscale male author portrait"
+      }
+    ]
+  },
+  "testing_attributes": {
+    "rule": "All interactive and key informational elements MUST include a data-testid attribute in kebab-case, representing the element's role.",
+    "examples": ["data-testid='explore-books-button'", "data-testid='add-to-cart-button'", "data-testid='wishlist-icon'"]
+  },
+  "iconography_library": "lucide-react",
+  "instructions_to_main_agent": [
+    "Install required libraries: framer-motion, @studio-freight/lenis, three, @react-three/fiber, @react-three/drei.",
+    "Use JavaScript (JS/JSX) strictly. Do not use TypeScript.",
+    "Implement Lenis for smooth scroll on the root layout.",
+    "Build the 3D Hero using Canvas from R3F, creating a minimal floating book with magic particles. If actual 3D models are unavailable, use abstract geometry and lighting to mimic magical pages/particles in a premium white setting.",
+    "Ensure headings use Playfair Display and text tracking is extremely tight to mimic print magazines.",
+    "Do not use generic Shadcn cards with borders/shadows for products. Instead, build custom minimalistic book covers. Use the provided image URLs.",
+    "Use the Red Accent (#D90429) sparingly—primarily on main CTAs, active states, or sale tags to make it pop against the black and white theme."
+  ]
+}
