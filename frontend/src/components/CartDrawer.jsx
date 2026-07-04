@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, CreditCard, Smartphone } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
@@ -26,12 +26,15 @@ export default function CartDrawer() {
 
   const origin = window.location.origin;
 
+  // Strip to {id, qty} — prices are resolved server-side from the catalog
+  const cartPayload = useMemo(() => cart.map(({ id, qty }) => ({ id, qty })), [cart]);
+
   const handleStripeCheckout = useCallback(async () => {
     if (!cart.length) return;
     setStripeLoading(true);
     try {
       const { data } = await http.post("/checkout/stripe/session", {
-        items: cart,
+        items: cartPayload,
         customer_email: user?.email || null,
         success_url: `${origin}/checkout/success`,
         cancel_url: `${origin}/checkout/cancel`,
@@ -42,7 +45,7 @@ export default function CartDrawer() {
       toast.error(msg);
       setStripeLoading(false);
     }
-  }, [cart, user, origin]);
+  }, [cart, cartPayload, user, origin]);
 
   const handleRazorpayCheckout = useCallback(async () => {
     if (!cart.length) return;
@@ -52,7 +55,7 @@ export default function CartDrawer() {
       if (!loaded) throw new Error("Failed to load Razorpay SDK");
 
       const { data: order } = await http.post("/checkout/razorpay/order", {
-        items: cart,
+        items: cartPayload,
         customer_email: user?.email || null,
       });
 
@@ -72,7 +75,7 @@ export default function CartDrawer() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               customer_email: user?.email || null,
-              items: cart,
+              items: cartPayload,
             });
             clearCart();
             setCartOpen(false);
@@ -93,7 +96,7 @@ export default function CartDrawer() {
       toast.error(msg);
       setRazorpayLoading(false);
     }
-  }, [cart, user, totals, clearCart, setCartOpen, origin]);
+  }, [cart, cartPayload, user, totals, clearCart, setCartOpen, origin]);
 
   return (
     <AnimatePresence>
