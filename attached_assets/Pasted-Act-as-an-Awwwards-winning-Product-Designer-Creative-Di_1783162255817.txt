@@ -1,0 +1,594 @@
+Act as an Awwwards-winning Product Designer, Creative Director, Senior UI/UX Engineer, and Frontend Architect.
+
+Design a complete enterprise-grade AI-powered Story Book Marketplace called "SagaDrop".
+
+IMPORTANT:
+Use the uploaded HyperFit UI as the primary visual reference.
+
+DO NOT redesign the layout.
+
+Maintain the same visual hierarchy, spacing, typography scale, fullscreen sections, editorial composition, premium product presentation, navigation style, and minimal luxury aesthetic.
+
+Transform HyperFit into a premium bookstore while preserving the same premium feeling.
+
+================================================
+
+PROJECT
+
+Name
+SagaDrop
+
+Tagline
+Every Story Begins Here.
+
+Platform
+Enterprise Web Application
+
+Style
+Apple + HyperFit + Linear + Nike + Framer + Awwwards
+
+================================================
+
+DESIGN SYSTEM
+
+Primary Background
+#FFFFFF
+
+Secondary
+#F8F8F8
+
+Primary Text
+#000000
+
+Accent
+#D90429
+
+Large editorial typography
+
+Massive whitespace
+
+Minimal luxury
+
+Premium photography
+
+Glassmorphism where appropriate
+
+Smooth shadows
+
+Thin borders
+
+Responsive mobile-first design
+
+================================================
+
+ANIMATIONS
+
+Framer Motion
+
+Spring animations
+
+GSAP Scroll
+
+Lenis Smooth Scroll
+
+Text reveal
+
+Fade
+
+Scale
+
+Parallax
+
+Hover lift
+
+Card tilt
+
+Magnetic buttons
+
+Page transitions
+
+60 FPS
+
+GPU Accelerated
+
+================================================
+
+HOME PAGE
+
+Exactly like HyperFit.
+
+Section 1
+
+Fullscreen Hero
+
+Replace clothing video with a seamless looping cinematic 3D video.
+
+White luxury studio background.
+
+Premium black leather book floating.
+
+Book slowly opens.
+
+Pages naturally flip.
+
+Fantasy world rises from the pages.
+
+Castle.
+
+Clouds.
+
+Birds.
+
+Floating books.
+
+Dust particles.
+
+Magic light.
+
+Camera slowly orbits.
+
+15-second seamless loop.
+
+Hero Text
+
+EVERY STORY
+BEGINS
+HERE.
+
+Subtitle
+
+Discover thousands of stories powered by AI.
+
+Buttons
+
+Explore Books
+
+Customize Your Book
+
+Scroll indicator.
+
+Sticky floating navbar.
+
+================================================
+
+Section 2
+
+Featured Collections
+
+Exactly like HyperFit.
+
+Collections:
+
+Limited Editions
+
+Collector Editions
+
+Award Winners
+
+Editor's Picks
+
+Best Sellers
+
+New Releases
+
+Fantasy Collection
+
+Mystery Collection
+
+Romance Collection
+
+Sci-Fi Collection
+
+Adventure Collection
+
+Children's Collection
+
+Each collection opens its own dedicated page.
+
+NO Add to Cart button here.
+
+Only:
+
+Large Book Cover
+
+Collection Name
+
+Description
+
+Explore →
+
+================================================
+
+Section 3
+
+Trending Books
+
+Same layout as HyperFit product grid.
+
+Book Cover
+
+Title
+
+Author
+
+Rating
+
+Price
+
+Wishlist
+
+Quick View
+
+Add to Cart
+
+================================================
+
+Section 4
+
+Categories
+
+Fantasy
+
+Mystery
+
+Romance
+
+Adventure
+
+Sci-Fi
+
+Horror
+
+Historical
+
+Children
+
+Manga
+
+Classics
+
+================================================
+
+Section 5
+
+AI Librarian
+
+Interactive AI search
+
+Mood Finder
+
+Book Recommendation
+
+Reading Assistant
+
+Voice Search
+
+================================================
+
+Section 6
+
+Popular Authors
+
+Large portraits
+
+Biography
+
+Books
+
+================================================
+
+Section 7
+
+Reader Reviews
+
+Premium review cards
+
+================================================
+
+Section 8
+
+Huge full-width branding section.
+
+Massive outlined typography.
+
+"SAGADROP"
+
+Like a luxury fashion campaign.
+
+Full viewport.
+
+================================================
+
+Section 9
+
+Newsletter
+
+================================================
+
+Section 10
+
+Footer
+
+SHOP
+
+Trending
+
+New Releases
+
+Best Sellers
+
+Limited Editions
+
+Collector Editions
+
+Gift Cards
+
+DISCOVER
+
+Categories
+
+Authors
+
+AI Librarian
+
+Book Customizer
+
+Reviews
+
+Blog
+
+AI
+
+Book Finder
+
+Mood Finder
+
+Reading Assistant
+
+Recommendations
+
+ACCOUNT
+
+Login
+
+Register
+
+Dashboard
+
+Wishlist
+
+Orders
+
+SUPPORT
+
+Track Order
+
+Shipping
+
+Returns
+
+FAQ
+
+Contact
+
+COMPANY
+
+About
+
+Careers
+
+Press
+
+Privacy
+
+Terms
+
+================================================
+
+CREATE DEDICATED PAGES
+
+HOME
+
+COLLECTIONS
+
+Limited Editions
+
+Collector Editions
+
+Award Winners
+
+Editor's Picks
+
+Best Sellers
+
+New Releases
+
+BOOKS
+
+BOOK DETAILS
+
+CATEGORIES
+
+CATEGORY DETAILS
+
+AUTHORS
+
+AUTHOR DETAILS
+
+AI LIBRARIAN
+
+AI BOOK FINDER
+
+BOOK CUSTOMIZER
+
+SEARCH
+
+LOGIN
+
+REGISTER
+
+FORGOT PASSWORD
+
+VERIFY EMAIL
+
+WISHLIST
+
+CART
+
+CHECKOUT
+
+PAYMENT
+
+ORDER SUCCESS
+
+ORDER TRACKING
+
+MY LIBRARY
+
+READING LIST
+
+RECENTLY VIEWED
+
+PROFILE
+
+ORDERS
+
+SETTINGS
+
+NOTIFICATIONS
+
+REVIEWS
+
+ABOUT
+
+CONTACT
+
+FAQ
+
+PRIVACY
+
+TERMS
+
+BLOG
+
+BOOK CLUBS
+
+READING CHALLENGES
+
+================================================
+
+BOOK DETAILS PAGE
+
+Large Hero Cover
+
+Book Gallery
+
+Synopsis
+
+Preview
+
+Author
+
+Publisher
+
+ISBN
+
+Pages
+
+Language
+
+Edition
+
+Reader Reviews
+
+Related Books
+
+Frequently Bought Together
+
+AI Summary
+
+================================================
+
+BOOK CUSTOMIZER
+
+Exactly like HyperFit Shoe Customizer.
+
+Replace shoe parts with:
+
+Cover Material
+
+Hardcover
+
+Paperback
+
+Collector Edition
+
+Dust Jacket
+
+Foil Color
+
+Bookmark
+
+Gift Box
+
+Font Style
+
+Embossed Title
+
+Live 3D Preview
+
+AI Cover Generator
+
+================================================
+
+ADMIN
+
+Dashboard
+
+Books
+
+Authors
+
+Genres
+
+Publishers
+
+Orders
+
+Customers
+
+Inventory
+
+Coupons
+
+Analytics
+
+Reports
+
+Settings
+
+================================================
+
+FINAL GOAL
+
+Build a production-ready enterprise application that feels exactly like HyperFit but for books.
+
+Luxury.
+
+Minimal.
+
+Editorial.
+
+Immersive.
+
+Award-winning.
+
+Do not generate placeholders.
+
+Use realistic book covers.
+
+Use realistic author images.
+
+Every page should feel handcrafted and premium.
+
+The final result should be worthy of an Awwwards Site of the Day.
