@@ -4,3 +4,9 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+DB_NAME = "sagadrop"
+REACT_APP_BACKEND_URL = ""
