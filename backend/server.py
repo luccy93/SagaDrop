@@ -11,6 +11,7 @@ from routes.newsletter import router as newsletter_router
 from routes.ai import router as ai_router
 from routes.share import router as share_router
 from routes.auth import router as auth_router
+from routes.checkout import router as checkout_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,6 +29,7 @@ api_router.include_router(newsletter_router)
 api_router.include_router(ai_router)
 api_router.include_router(share_router)
 api_router.include_router(auth_router)
+api_router.include_router(checkout_router)
 app.include_router(api_router)
 
 app.add_middleware(

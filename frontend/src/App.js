@@ -5,6 +5,8 @@ import Home from "@/pages/Home";
 import SharePage from "@/pages/SharePage";
 import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
+import CheckoutSuccess from "@/pages/CheckoutSuccess";
+import CheckoutCancel from "@/pages/CheckoutCancel";
 import SmoothScroll from "@/components/SmoothScroll";
 import { StoreProvider } from "@/context/StoreContext";
 import { AuthProvider } from "@/context/AuthContext";
@@ -21,6 +23,8 @@ export default function App() {
             <Route path="/share/:id" element={<SharePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/checkout/success" element={<CheckoutSuccess />} />
+            <Route path="/checkout/cancel" element={<CheckoutCancel />} />
             <Route path="*" element={<Home />} />
           </Routes>
           <Toaster
