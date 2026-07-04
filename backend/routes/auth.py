@@ -40,6 +40,8 @@ def _client_ip(request: Request) -> str:
 
 
 async def _check_lockout(identifier: str):
+    if db is None:
+        return
     doc = await db.login_attempts.find_one({"identifier": identifier})
     if doc and doc.get("count", 0) >= MAX_ATTEMPTS:
         locked_until = doc.get("locked_until")
@@ -49,6 +51,8 @@ async def _check_lockout(identifier: str):
 
 
 async def _record_failure(identifier: str):
+    if db is None:
+        return
     doc = await db.login_attempts.find_one_and_update(
         {"identifier": identifier},
         {"$inc": {"count": 1}},
@@ -64,6 +68,8 @@ async def _record_failure(identifier: str):
 
 @router.post("/register")
 async def register(inp: RegisterInput, response: Response):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     email = inp.email.lower().strip()
     existing = await db.users.find_one({"email": email})
     if existing:
@@ -86,6 +92,8 @@ async def register(inp: RegisterInput, response: Response):
 
 @router.post("/login")
 async def login(inp: LoginInput, request: Request, response: Response):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     email = inp.email.lower().strip()
     identifier = f"{_client_ip(request)}:{email}"
     await _check_lockout(identifier)
@@ -127,6 +135,8 @@ async def refresh(request: Request, response: Response):
     except pyjwt.InvalidTokenError:
         raise HTTPException(401, "Invalid refresh token")
 
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     from bson import ObjectId
     user = await db.users.find_one({"_id": ObjectId(payload["sub"])})
     if not user:
@@ -145,6 +155,8 @@ async def get_state(user: dict = Depends(get_current_user)):
 
 @router.put("/state")
 async def put_state(state: AccountState, user: dict = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     await db.users.update_one(
         {"_id": user["_id"]},
         {"$set": {"cart": state.cart[:100], "wishlist": state.wishlist[:100]}},

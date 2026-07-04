@@ -26,6 +26,8 @@ def _public_base(request: Request) -> str:
 
 @router.post("/share")
 async def create_share(req: ShareRequest, request: Request):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     if req.mime_type not in ALLOWED_MIMES:
         raise HTTPException(400, "Unsupported image type. Use PNG, JPEG or WebP.")
     try:
@@ -58,6 +60,8 @@ async def create_share(req: ShareRequest, request: Request):
 
 @router.get("/share/{sid}", response_model=ShareInfo)
 async def get_share(sid: str, request: Request):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     doc = await db.shared_books.find_one_and_update(
         {"id": sid},
         {"$inc": {"views": 1}},
@@ -80,6 +84,8 @@ async def get_share(sid: str, request: Request):
 
 @router.get("/share/{sid}/cover")
 async def get_share_cover(sid: str):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     doc = await db.shared_books.find_one({"id": sid})
     if not doc:
         raise HTTPException(status_code=404, detail="Shared book not found")
@@ -92,6 +98,8 @@ async def get_share_cover(sid: str):
 
 @router.get("/share/{sid}/page")
 async def get_share_page(sid: str, request: Request):
+    if db is None:
+        raise HTTPException(503, "Database not configured")
     doc = await db.shared_books.find_one({"id": sid})
     if not doc:
         raise HTTPException(status_code=404, detail="Shared book not found")

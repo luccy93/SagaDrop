@@ -58,6 +58,8 @@ def public_user(user: dict) -> dict:
 
 
 async def get_current_user(request: Request) -> dict:
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not configured")
     token = request.cookies.get("access_token")
     if not token:
         auth_header = request.headers.get("Authorization", "")
