@@ -41,11 +41,17 @@ def create_refresh_token(user_id: str) -> str:
     return jwt.encode(payload, get_jwt_secret(), algorithm=JWT_ALGORITHM)
 
 
+def _is_secure_context() -> bool:
+    """True when running in a deployed/production environment."""
+    return bool(os.environ.get("REPLIT_DEPLOYMENT") or os.environ.get("FORCE_SECURE_COOKIES"))
+
+
 def set_auth_cookies(response, access_token: str, refresh_token: str):
+    secure = _is_secure_context()
     response.set_cookie(key="access_token", value=access_token, httponly=True,
-                        secure=False, samesite="lax", max_age=900, path="/")
+                        secure=secure, samesite="lax", max_age=900, path="/")
     response.set_cookie(key="refresh_token", value=refresh_token, httponly=True,
-                        secure=False, samesite="lax", max_age=604800, path="/")
+                        secure=secure, samesite="lax", max_age=604800, path="/")
 
 
 def public_user(user: dict) -> dict:

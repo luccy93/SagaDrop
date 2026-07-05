@@ -215,9 +215,10 @@ async def refresh(request: Request, response: Response):
     user = await db.users.find_one({"_id": ObjectId(payload["sub"])})
     if not user:
         raise HTTPException(401, "User not found")
+    from auth_utils import _is_secure_context
     access = create_access_token(str(user["_id"]), user["email"])
     response.set_cookie(key="access_token", value=access, httponly=True,
-                        secure=False, samesite="lax", max_age=900, path="/")
+                        secure=_is_secure_context(), samesite="lax", max_age=900, path="/")
     return {"ok": True}
 
 
@@ -273,10 +274,16 @@ async def send_otp(inp: SendOtpInput):
 
     await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
 
+    dev_mode = not os.environ.get("RESEND_API_KEY", "")
     sent = await _send_otp_email(email, otp, inp.name or "")
+
+    if not sent and not dev_mode:
+        # Resend key is present but sending failed — surface a real error
+        raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
+
     result: dict = {"ok": True, "sent": sent}
-    if not sent:
-        # Dev mode: expose OTP so the app can be tested without an email service
+    if dev_mode:
+        # Only expose OTP in response when no email service is configured (local dev)
         result["dev_otp"] = otp
     return result
 
@@ -287,28 +294,48 @@ async def verify_otp(inp: VerifyOtpInput, response: Response):
         raise HTTPException(503, "Database not configured")
 
     email = inp.email.lower().strip()
-    otp_doc = await db.otps.find_one({"email": email, "purpose": inp.purpose})
 
-    if not otp_doc:
-        raise HTTPException(400, "No verification code found. Please request a new one.")
+    # Atomically increment attempts and retrieve the BEFORE state.
+    # Filter also ensures we only operate on a non-exhausted, non-expired doc.
+    now = datetime.now(timezone.utc)
+    otp_doc = await db.otps.find_one_and_update(
+        {
+            "email": email,
+            "purpose": inp.purpose,
+            "attempts": {"$lt": OTP_MAX_ATTEMPTS},
+            "expires_at": {"$gt": now.isoformat()},
+        },
+        {"$inc": {"attempts": 1}},
+        return_document=False,  # return the BEFORE state
+    )
 
-    expires_at = datetime.fromisoformat(otp_doc["expires_at"])
-    if datetime.now(timezone.utc) > expires_at:
-        await db.otps.delete_one({"email": email, "purpose": inp.purpose})
-        raise HTTPException(400, "Code expired. Please request a new one.")
-
-    attempts = otp_doc.get("attempts", 0)
-    if attempts >= OTP_MAX_ATTEMPTS:
+    if otp_doc is None:
+        # Either no doc exists, it's expired, or already exhausted — check which
+        stale = await db.otps.find_one({"email": email, "purpose": inp.purpose})
+        if not stale:
+            raise HTTPException(400, "No verification code found. Please request a new one.")
+        if datetime.fromisoformat(stale["expires_at"]) <= now:
+            await db.otps.delete_one({"email": email, "purpose": inp.purpose})
+            raise HTTPException(400, "Code expired. Please request a new one.")
+        # attempts exhausted
         await db.otps.delete_one({"email": email, "purpose": inp.purpose})
         raise HTTPException(400, "Too many incorrect attempts. Please request a new code.")
 
     if _hash_otp(inp.otp) != otp_doc["otp_hash"]:
-        await db.otps.update_one({"email": email, "purpose": inp.purpose}, {"$inc": {"attempts": 1}})
-        left = OTP_MAX_ATTEMPTS - attempts - 1
+        attempts_after = otp_doc.get("attempts", 0) + 1  # already incremented in DB
+        left = OTP_MAX_ATTEMPTS - attempts_after
+        if left <= 0:
+            await db.otps.delete_one({"email": email, "purpose": inp.purpose})
+            raise HTTPException(400, "Too many incorrect attempts. Please request a new code.")
         raise HTTPException(400, f"Incorrect code. {left} attempt(s) remaining.")
 
-    # Valid — delete OTP (single-use)
-    await db.otps.delete_one({"email": email, "purpose": inp.purpose})
+    # Valid — atomically delete using otp_hash as a uniqueness guard (single-use)
+    del_result = await db.otps.delete_one(
+        {"email": email, "purpose": inp.purpose, "otp_hash": otp_doc["otp_hash"]}
+    )
+    if del_result.deleted_count == 0:
+        # Another concurrent request already consumed this OTP
+        raise HTTPException(400, "Verification code already used. Please request a new one.")
 
     if inp.purpose == "signup":
         user_doc = {
@@ -344,7 +371,26 @@ async def google_auth(inp: GoogleAuthInput, response: Response):
     if db is None:
         raise HTTPException(503, "Database not configured")
 
-    # Fetch user info from Google using the access token
+    # Step 1: Validate the access token via tokeninfo — confirms audience matches our app
+    try:
+        tokeninfo = http_requests.get(
+            "https://oauth2.googleapis.com/tokeninfo",
+            params={"access_token": inp.access_token},
+            timeout=10,
+        )
+        if tokeninfo.status_code != 200:
+            raise HTTPException(401, "Invalid Google access token.")
+        ti = tokeninfo.json()
+        # azp is the authorized party (client that created the token); aud may differ for access tokens
+        token_audience = ti.get("azp") or ti.get("aud") or ""
+        if token_audience != google_client_id:
+            raise HTTPException(401, "Google token was not issued for this application.")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(401, "Could not validate Google token.")
+
+    # Step 2: Fetch user profile from userinfo
     try:
         resp = http_requests.get(
             "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -352,12 +398,12 @@ async def google_auth(inp: GoogleAuthInput, response: Response):
             timeout=10,
         )
         if resp.status_code != 200:
-            raise HTTPException(401, "Invalid Google access token.")
+            raise HTTPException(401, "Could not fetch Google user profile.")
         info = resp.json()
     except HTTPException:
         raise
     except Exception:
-        raise HTTPException(401, "Could not verify Google token.")
+        raise HTTPException(401, "Could not fetch Google user profile.")
 
     email = info.get("email", "").lower().strip()
     name = info.get("name") or info.get("given_name") or "Reader"
