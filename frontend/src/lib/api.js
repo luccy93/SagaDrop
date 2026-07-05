@@ -31,6 +31,8 @@ export const aiGenerateCover = (payload) =>
 export const createShare = (payload) => http.post("/share", payload).then((r) => r.data);
 export const fetchShare = (id) => http.get(`/share/${id}`).then((r) => r.data);
 
+export const fetchPublicConfig = () => http.get("/public-config").then((r) => r.data);
+
 export const authMe = () => http.get("/auth/me").then((r) => r.data);
 export const authLogin = (email, password) =>
   http.post("/auth/login", { email, password }).then((r) => r.data);
@@ -39,3 +41,13 @@ export const authRegister = (name, email, password) =>
 export const authLogout = () => http.post("/auth/logout").then((r) => r.data);
 export const fetchAccountState = () => http.get("/auth/state").then((r) => r.data);
 export const saveAccountState = (state) => http.put("/auth/state", state).then((r) => r.data);
+
+// OTP
+export const authSendOtp = (payload) =>
+  http.post("/auth/send-otp", payload).then((r) => r.data);
+export const authVerifyOtp = (payload) =>
+  http.post("/auth/verify-otp", payload).then((r) => r.data);
+
+// Google OAuth
+export const authGoogle = (access_token) =>
+  http.post("/auth/google", { access_token }).then((r) => r.data);

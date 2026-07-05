@@ -1,8 +1,9 @@
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { StoreProvider } from "@/context/StoreContext";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import SmoothScroll from "@/components/SmoothScroll";
 
 // Core pages
@@ -48,74 +49,88 @@ import AdminOrders     from "@/pages/admin/AdminOrders";
 import AdminAnalytics  from "@/pages/admin/AdminAnalytics";
 import AdminComingSoon from "@/pages/admin/AdminComingSoon";
 
+// Inner app — must be inside AuthProvider so it can read googleClientId.
+// GoogleOAuthProvider must ALWAYS be present so useGoogleLogin() hooks never
+// throw "missing provider". We start with a placeholder and update once the
+// real client ID is fetched from /api/public-config.
+function AppRoutes() {
+  const { googleClientId } = useAuth();
+
+  return (
+    <GoogleOAuthProvider clientId={googleClientId || "pending"}>
+      <BrowserRouter>
+        <SmoothScroll />
+        <Routes>
+          {/* Core */}
+          <Route path="/"                 element={<Home />} />
+          <Route path="/share/:id"        element={<SharePage />} />
+          <Route path="/login"            element={<LoginPage />} />
+          <Route path="/signup"           element={<SignupPage />} />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/checkout/cancel"  element={<CheckoutCancel />} />
+
+          {/* Shop */}
+          <Route path="/trending"           element={<TrendingPage />} />
+          <Route path="/new-releases"       element={<NewReleasesPage />} />
+          <Route path="/bestsellers"        element={<BestsellersPage />} />
+          <Route path="/collector-editions" element={<CollectorEditionsPage />} />
+          <Route path="/gift-cards"         element={<GiftCardsPage />} />
+
+          {/* Discover */}
+          <Route path="/categories"      element={<CategoriesPage />} />
+          <Route path="/ai-librarian"    element={<AILibrarianPage />} />
+          <Route path="/book-customizer" element={<BookCustomizerPage />} />
+          <Route path="/authors"         element={<AuthorsPage />} />
+          <Route path="/reviews"         element={<ReviewsPage />} />
+
+          {/* Support */}
+          <Route path="/track-order" element={<TrackOrderPage />} />
+          <Route path="/shipping"    element={<ShippingPage />} />
+          <Route path="/returns"     element={<ReturnsPage />} />
+          <Route path="/faq"         element={<FAQPage />} />
+          <Route path="/contact"     element={<ContactPage />} />
+
+          {/* Company */}
+          <Route path="/about"          element={<AboutPage />} />
+          <Route path="/careers"        element={<CareersPage />} />
+          <Route path="/press"          element={<PressPage />} />
+          <Route path="/sustainability" element={<SustainabilityPage />} />
+          <Route path="/terms"          element={<TermsPage />} />
+
+          {/* Admin */}
+          <Route path="/admin"           element={<AdminDashboard />} />
+          <Route path="/admin/books"     element={<AdminBooks />} />
+          <Route path="/admin/orders"    element={<AdminOrders />} />
+          <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          <Route path="/admin/customers" element={<AdminComingSoon title="Customers" />} />
+          <Route path="/admin/coupons"   element={<AdminComingSoon title="Coupons" />} />
+          <Route path="/admin/settings"  element={<AdminComingSoon title="Settings" />} />
+
+          {/* Fallback */}
+          <Route path="*" element={<Home />} />
+        </Routes>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "#0a0a0a",
+              color: "#fff",
+              border: "1px solid #0a0a0a",
+              borderRadius: 0,
+            },
+          }}
+        />
+      </BrowserRouter>
+    </GoogleOAuthProvider>
+  );
+}
+
 export default function App() {
   return (
     <div className="App">
       <AuthProvider>
         <StoreProvider>
-          <BrowserRouter>
-            <SmoothScroll />
-            <Routes>
-              {/* Core */}
-              <Route path="/"                 element={<Home />} />
-              <Route path="/share/:id"        element={<SharePage />} />
-              <Route path="/login"            element={<LoginPage />} />
-              <Route path="/signup"           element={<SignupPage />} />
-              <Route path="/checkout/success" element={<CheckoutSuccess />} />
-              <Route path="/checkout/cancel"  element={<CheckoutCancel />} />
-
-              {/* Shop */}
-              <Route path="/trending"           element={<TrendingPage />} />
-              <Route path="/new-releases"       element={<NewReleasesPage />} />
-              <Route path="/bestsellers"        element={<BestsellersPage />} />
-              <Route path="/collector-editions" element={<CollectorEditionsPage />} />
-              <Route path="/gift-cards"         element={<GiftCardsPage />} />
-
-              {/* Discover */}
-              <Route path="/categories"    element={<CategoriesPage />} />
-              <Route path="/ai-librarian"  element={<AILibrarianPage />} />
-              <Route path="/book-customizer" element={<BookCustomizerPage />} />
-              <Route path="/authors"       element={<AuthorsPage />} />
-              <Route path="/reviews"       element={<ReviewsPage />} />
-
-              {/* Support */}
-              <Route path="/track-order" element={<TrackOrderPage />} />
-              <Route path="/shipping"    element={<ShippingPage />} />
-              <Route path="/returns"     element={<ReturnsPage />} />
-              <Route path="/faq"         element={<FAQPage />} />
-              <Route path="/contact"     element={<ContactPage />} />
-
-              {/* Company */}
-              <Route path="/about"          element={<AboutPage />} />
-              <Route path="/careers"        element={<CareersPage />} />
-              <Route path="/press"          element={<PressPage />} />
-              <Route path="/sustainability" element={<SustainabilityPage />} />
-              <Route path="/terms"          element={<TermsPage />} />
-
-              {/* Admin */}
-              <Route path="/admin"             element={<AdminDashboard />} />
-              <Route path="/admin/books"       element={<AdminBooks />} />
-              <Route path="/admin/orders"      element={<AdminOrders />} />
-              <Route path="/admin/analytics"   element={<AdminAnalytics />} />
-              <Route path="/admin/customers"   element={<AdminComingSoon title="Customers" />} />
-              <Route path="/admin/coupons"     element={<AdminComingSoon title="Coupons" />} />
-              <Route path="/admin/settings"    element={<AdminComingSoon title="Settings" />} />
-
-              {/* Fallback */}
-              <Route path="*" element={<Home />} />
-            </Routes>
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: "#0a0a0a",
-                  color: "#fff",
-                  border: "1px solid #0a0a0a",
-                  borderRadius: 0,
-                },
-              }}
-            />
-          </BrowserRouter>
+          <AppRoutes />
         </StoreProvider>
       </AuthProvider>
     </div>

@@ -24,6 +24,15 @@ async def root():
     return {"service": "SagaDrop", "status": "ok"}
 
 
+@api_router.get("/public-config")
+async def public_config():
+    """Public endpoint — exposes non-secret runtime config to the frontend."""
+    import os
+    return {
+        "google_client_id": os.environ.get("GOOGLE_CLIENT_ID", ""),
+    }
+
+
 api_router.include_router(books_router)
 api_router.include_router(newsletter_router)
 api_router.include_router(ai_router)
