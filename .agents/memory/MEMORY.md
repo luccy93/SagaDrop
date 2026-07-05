@@ -1,3 +1,4 @@
 - [Checkout integration security model](checkout-security.md) — prices always resolved server-side from CATALOG; client sends id+qty only.
 - [Optional integrations pattern](optional-integrations.md) — Stripe/Razorpay/Resend gracefully absent; routes return 503 when keys missing.
 - [WebGL error in preview](webgl-preview.md) — Three.js hero scene fails in Replit container (no GPU); pre-existing, unrelated to checkout.
+- [OTP + Google OAuth security rules](otp-google-auth-security.md) — dev_otp gated on absent RESEND key; verify atomic; Google audience validated via tokeninfo; cookies env-gated secure.
