@@ -208,9 +208,9 @@ export default function Navbar() {
               <div className="px-8 py-6 border-t border-black/5 flex items-center justify-between">
                 <span className="eyebrow">Follow</span>
                 <div className="flex gap-4 text-xs font-medium">
-                  <a href="#" className="no-underline text-black hover:text-[#D90429]">Instagram</a>
-                  <a href="#" className="no-underline text-black hover:text-[#D90429]">TikTok</a>
-                  <a href="#" className="no-underline text-black hover:text-[#D90429]">X</a>
+                  <a href="https://www.instagram.com/sagadrop" target="_blank" rel="noopener noreferrer" className="no-underline text-black hover:text-[#D90429]">Instagram</a>
+                  <a href="https://www.tiktok.com/@sagadrop" target="_blank" rel="noopener noreferrer" className="no-underline text-black hover:text-[#D90429]">TikTok</a>
+                  <a href="https://x.com/sagadrop" target="_blank" rel="noopener noreferrer" className="no-underline text-black hover:text-[#D90429]">X</a>
                 </div>
               </div>
             </motion.aside>

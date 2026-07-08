@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   Sparkles, Search, Heart, Rocket, Compass, Skull, Feather, Baby,
 } from "lucide-react";
@@ -15,6 +16,7 @@ const CATS = [
 ];
 
 export default function Categories() {
+  const navigate = useNavigate();
   return (
     <section id="categories" className="py-24 md:py-32 bg-[#f6f6f6]" data-testid="categories-section">
       <div className="max-w-[1600px] mx-auto px-6 md:px-10">
@@ -34,13 +36,13 @@ export default function Categories() {
           {CATS.map((c, i) => (
             <motion.a
               key={c.name}
-              href="#trending"
+              onClick={() => navigate("/categories")}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.04 }}
               data-testid={`category-${c.name.toLowerCase()}`}
-              className="group relative bg-white p-6 md:p-8 no-underline text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white transition-colors duration-500 aspect-square flex flex-col justify-between overflow-hidden"
+              className="group relative bg-white p-6 md:p-8 no-underline text-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white transition-colors duration-500 aspect-square flex flex-col justify-between overflow-hidden cursor-pointer"
             >
               <c.icon className="w-8 h-8 text-[#D90429] group-hover:text-white transition-colors" strokeWidth={1.6} />
               <div>

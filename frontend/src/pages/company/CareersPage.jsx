@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowRight, MapPin, Clock } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 
@@ -60,9 +61,9 @@ export default function CareersPage() {
           <div className="mt-16 bg-[#f6f6f6] p-10 text-center">
             <h3 className="font-display text-3xl font-black tracking-tight mb-4">Don't see your role?</h3>
             <p className="text-sm text-[#555] mb-6">We're always interested in exceptional people. Send us your story.</p>
-            <a href="/contact" className="inline-flex items-center gap-2 bg-[#D90429] text-white px-8 py-4 text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-[#B00320] transition-colors no-underline">
+            <Link to="/contact" className="inline-flex items-center gap-2 bg-[#D90429] text-white px-8 py-4 text-[11px] uppercase tracking-[0.18em] font-semibold hover:bg-[#B00320] transition-colors no-underline">
               Say Hello <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </Link>
           </div>
         </div>
       </section>

@@ -61,8 +61,13 @@ export default function Footer() {
               Curated by humans, augmented by AI, printed with love.
             </p>
             <div className="mt-8 flex gap-6 text-xs uppercase tracking-[0.18em] font-semibold">
-              {["Instagram", "TikTok", "X", "YouTube"].map((s) => (
-                <a key={s} href="#" className="no-underline text-[#0a0a0a] hover:text-[#D90429] transition-colors">{s}</a>
+              {[
+                { label: "Instagram", url: "https://www.instagram.com/sagadrop" },
+                { label: "TikTok", url: "https://www.tiktok.com/@sagadrop" },
+                { label: "X", url: "https://x.com/sagadrop" },
+                { label: "YouTube", url: "https://www.youtube.com/@sagadrop" },
+              ].map((s) => (
+                <a key={s.label} href={s.url} target="_blank" rel="noopener noreferrer" className="no-underline text-[#0a0a0a] hover:text-[#D90429] transition-colors">{s.label}</a>
               ))}
             </div>
           </div>
