@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import BookCard from "@/components/BookCard";
 import { fetchBooks } from "@/lib/api";
 
 const COLLECTIONS = [
@@ -50,6 +52,13 @@ export default function Collections() {
             <p className="mt-8 text-sm text-[#555] max-w-sm leading-relaxed">
               {COLLECTIONS.find((c) => c.key === active)?.copy}
             </p>
+
+            <Link
+              to="/collections"
+              className="mt-8 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-[#0a0a0a] hover:text-[#D90429] no-underline group transition-colors"
+            >
+              View all <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
           {/* Right — uniform 3-column book grid */}
@@ -58,29 +67,7 @@ export default function Collections() {
               <div className="col-span-full text-sm text-[#999] py-12 text-center">Loading collection…</div>
             )}
             {books.map((b, i) => (
-              <motion.a
-                key={b.id}
-                href="#trending"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: i * 0.06 }}
-                data-testid={`collection-book-${b.id}`}
-                className="group no-underline text-[#0a0a0a]"
-              >
-                <div className="relative aspect-[3/4] bg-[#f6f6f6] overflow-hidden">
-                  <img
-                    src={b.cover} alt={b.title} loading="lazy"
-                    onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format"; }}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                <div className="pt-3">
-                  <h3 className="font-display text-sm md:text-base font-bold tracking-tight leading-tight">{b.title}</h3>
-                  <p className="text-[11px] text-[#555] mt-0.5">{b.author}</p>
-                </div>
-              </motion.a>
+              <BookCard key={b.id} book={b} priority={i < 3} />
             ))}
           </div>
 

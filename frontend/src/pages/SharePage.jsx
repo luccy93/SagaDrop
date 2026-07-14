@@ -114,15 +114,30 @@ export default function SharePage() {
                 <span className="px-4 py-2 border border-black/15 text-[11px] uppercase tracking-[0.15em] font-semibold">
                   {share.foil} foil
                 </span>
+                {share.size && (
+                  <span className="px-4 py-2 border border-black/15 text-[11px] uppercase tracking-[0.15em] font-semibold">
+                    {share.size}
+                  </span>
+                )}
+                {share.finish && (
+                  <span className="px-4 py-2 border border-black/15 text-[11px] uppercase tracking-[0.15em] font-semibold">
+                    {share.finish}
+                  </span>
+                )}
+                {share.edge_stain && share.edge_stain !== "none" && (
+                  <span className="px-4 py-2 border border-black/15 text-[11px] uppercase tracking-[0.15em] font-semibold">
+                    {share.edge_stain} edge
+                  </span>
+                )}
                 <span className="px-4 py-2 bg-[#0a0a0a] text-white text-[11px] uppercase tracking-[0.15em] font-semibold inline-flex items-center gap-2">
                   <Eye className="w-3.5 h-3.5" /> {share.views.toLocaleString()} views
                 </span>
               </div>
 
               <p className="mt-8 text-[#555] leading-relaxed max-w-md">
-                This one-of-a-kind cover was designed with AI in the SagaDrop
+                This one-of-a-kind {share.material} edition was designed with AI in the SagaDrop
                 Book Customizer. Create your own bespoke edition — pick the
-                material, foil, and typography, and let AI paint the rest.
+                material, foil, typography, trim size, paper, and finish, and let AI paint the rest.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-4">

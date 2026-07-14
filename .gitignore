@@ -30,6 +30,10 @@ next-env.d.ts
 dist/
 dist
 
+# Replit local infrastructure
+.local/
+memory/
+
 # Environment files (comprehensive coverage)
 
 *token.json*

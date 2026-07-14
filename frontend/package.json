@@ -70,7 +70,8 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts"
   },
   "browserslist": {
     "production": [
@@ -84,11 +85,20 @@
       "last 1 safari version"
     ]
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@craco/craco": "7.1.0",
     "@emergentbase/visual-edits": "https://assets.emergent.sh/npm/emergentbase-visual-edits-1.0.12.tgz",
     "@eslint/js": "9.23.0",
+    "@playwright/test": "^1.61.1",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/lodash": "4.17.24",
     "autoprefixer": "10.4.20",
     "dotenv": "16.4.5",
@@ -98,6 +108,7 @@
     "eslint-plugin-react": "7.37.4",
     "eslint-plugin-react-hooks": "5.2.0",
     "globals": "15.15.0",
+    "playwright": "^1.61.1",
     "postcss": "8.5.10",
     "tailwindcss": "3.4.17"
   },

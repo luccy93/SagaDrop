@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Heart, Eye, ShoppingBag, Star } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { toast } from "sonner";
 
 export default function BookCard({ book, priority = false, variant = "default" }) {
   const { addToCart, toggleWishlist, isWished } = useStore();
+  const navigate = useNavigate();
   const wished = isWished(book.id);
 
   return (
@@ -48,6 +50,7 @@ export default function BookCard({ book, priority = false, variant = "default" }
             <ShoppingBag className="w-3.5 h-3.5" /> Add to Cart
           </button>
           <button
+            onClick={() => navigate(`/book/${book.id}`)}
             className="w-11 grid place-items-center border border-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white transition-colors"
             data-testid={`quick-view-${book.id}`}
             aria-label="Quick view"

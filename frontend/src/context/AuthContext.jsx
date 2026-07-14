@@ -50,11 +50,15 @@ export function AuthProvider({ children }) {
     return u;
   };
 
+  const refreshUser = async () => {
+    try { const u = await authMe(); setUser(u); return u; } catch { setUser(false); return null; }
+  };
+
   return (
     <AuthContext.Provider value={{
       user, login, register, logout,
       sendOtp, verifyOtp, loginWithGoogle,
-      googleClientId,
+      googleClientId, refreshUser,
     }}>
       {children}
     </AuthContext.Provider>

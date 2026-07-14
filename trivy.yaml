@@ -1,0 +1,9 @@
+scan:
+  scanners:
+    - vuln
+    - secret
+    - config
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM

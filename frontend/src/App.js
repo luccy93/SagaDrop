@@ -13,6 +13,12 @@ import LoginPage       from "@/pages/LoginPage";
 import SignupPage      from "@/pages/SignupPage";
 import CheckoutSuccess from "@/pages/CheckoutSuccess";
 import CheckoutCancel  from "@/pages/CheckoutCancel";
+import SearchPage         from "@/pages/SearchPage";
+import MyOrdersPage         from "@/pages/MyOrdersPage";
+import AccountPage          from "@/pages/AccountPage";
+import ProductPage          from "@/pages/ProductPage";
+import UserDashboardPage    from "@/pages/dashboard/UserDashboardPage";
+import ForgotPasswordPage   from "@/pages/ForgotPasswordPage";
 
 // Shop
 import TrendingPage          from "@/pages/shop/TrendingPage";
@@ -20,6 +26,7 @@ import NewReleasesPage       from "@/pages/shop/NewReleasesPage";
 import BestsellersPage       from "@/pages/shop/BestsellersPage";
 import CollectorEditionsPage from "@/pages/shop/CollectorEditionsPage";
 import GiftCardsPage         from "@/pages/shop/GiftCardsPage";
+import CollectionsPage       from "@/pages/shop/CollectionsPage";
 
 // Discover
 import CategoriesPage      from "@/pages/discover/CategoriesPage";
@@ -47,6 +54,8 @@ import AdminDashboard  from "@/pages/admin/AdminDashboard";
 import AdminBooks      from "@/pages/admin/AdminBooks";
 import AdminOrders     from "@/pages/admin/AdminOrders";
 import AdminAnalytics  from "@/pages/admin/AdminAnalytics";
+import AdminCoupons    from "@/pages/admin/AdminCoupons";
+import AdminCustomers  from "@/pages/admin/AdminCustomers";
 import AdminComingSoon from "@/pages/admin/AdminComingSoon";
 
 // Inner app — must be inside AuthProvider so it can read googleClientId.
@@ -66,8 +75,14 @@ function AppRoutes() {
           <Route path="/share/:id"        element={<SharePage />} />
           <Route path="/login"            element={<LoginPage />} />
           <Route path="/signup"           element={<SignupPage />} />
+          <Route path="/book/:id"          element={<ProductPage />} />
           <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/checkout/cancel"  element={<CheckoutCancel />} />
+          <Route path="/search"            element={<SearchPage />} />
+          <Route path="/dashboard"         element={<UserDashboardPage />} />
+          <Route path="/my-orders"         element={<MyOrdersPage />} />
+          <Route path="/account"           element={<AccountPage />} />
+          <Route path="/forgot-password"   element={<ForgotPasswordPage />} />
 
           {/* Shop */}
           <Route path="/trending"           element={<TrendingPage />} />
@@ -75,6 +90,7 @@ function AppRoutes() {
           <Route path="/bestsellers"        element={<BestsellersPage />} />
           <Route path="/collector-editions" element={<CollectorEditionsPage />} />
           <Route path="/gift-cards"         element={<GiftCardsPage />} />
+          <Route path="/collections"        element={<CollectionsPage />} />
 
           {/* Discover */}
           <Route path="/categories"      element={<CategoriesPage />} />
@@ -102,8 +118,8 @@ function AppRoutes() {
           <Route path="/admin/books"     element={<AdminBooks />} />
           <Route path="/admin/orders"    element={<AdminOrders />} />
           <Route path="/admin/analytics" element={<AdminAnalytics />} />
-          <Route path="/admin/customers" element={<AdminComingSoon title="Customers" />} />
-          <Route path="/admin/coupons"   element={<AdminComingSoon title="Coupons" />} />
+          <Route path="/admin/customers" element={<AdminCustomers />} />
+          <Route path="/admin/coupons"   element={<AdminCoupons />} />
           <Route path="/admin/settings"  element={<AdminComingSoon title="Settings" />} />
 
           {/* Fallback */}

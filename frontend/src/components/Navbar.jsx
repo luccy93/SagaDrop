@@ -6,13 +6,13 @@ import { useStore } from "@/context/StoreContext";
 import { useAuth } from "@/context/AuthContext";
 
 const links = [
-  { label: "Home", href: "#home" },
-  { label: "Trending", href: "#trending" },
-  { label: "Categories", href: "#categories" },
-  { label: "AI Studio", href: "#ai-studio" },
-  { label: "Customize", href: "#customizer" },
-  { label: "Collections", href: "#collections" },
-  { label: "Authors", href: "#authors" },
+  { label: "Home", href: "/" },
+  { label: "Trending", href: "/#trending" },
+  { label: "Categories", href: "/#categories" },
+  { label: "AI Studio", href: "/#ai-studio" },
+  { label: "Customize", href: "/#customizer" },
+  { label: "Collections", href: "/#collections" },
+  { label: "Authors", href: "/#authors" },
 ];
 
 export default function Navbar() {
@@ -42,7 +42,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-6 md:px-10 h-[72px] flex items-center justify-between">
-          <a href="#home" data-testid="logo" className="flex items-center gap-2 no-underline text-black">
+          <a href="/" data-testid="logo" className="flex items-center gap-2 no-underline text-black">
             <BookOpen className="w-6 h-6 text-[#D90429]" strokeWidth={2.2} />
             <span className="font-display text-[22px] font-black tracking-tight">
               SAGA<span className="text-[#D90429]">DROP</span>
@@ -92,6 +92,14 @@ export default function Navbar() {
                     >
                       <div className="font-display font-bold text-base truncate" data-testid="profile-menu-name">{user.name}</div>
                       <div className="text-xs text-[#777] truncate mt-0.5">{user.email}</div>
+                      <button onClick={() => { navigate("/dashboard"); setProfileOpen(false); }}
+                        className="mt-4 w-full inline-flex items-center justify-center gap-2 bg-[#D90429] hover:bg-[#B00320] text-white py-2.5 text-[11px] uppercase tracking-[0.15em] font-semibold transition-colors">
+                        <BookOpen className="w-3.5 h-3.5" /> Dashboard
+                      </button>
+                      <button onClick={() => { navigate("/account"); setProfileOpen(false); }}
+                        className="mt-2 w-full inline-flex items-center justify-center gap-2 border border-black/10 hover:bg-[#f0f0f0] py-2.5 text-[11px] uppercase tracking-[0.15em] font-semibold transition-colors">
+                        <User className="w-3.5 h-3.5" /> My Account
+                      </button>
                       <button
                         onClick={() => { logout(); setProfileOpen(false); }}
                         data-testid="logout-btn"
@@ -165,6 +173,12 @@ export default function Navbar() {
                   autoFocus
                   placeholder="Search titles, authors, genres…"
                   className="flex-1 bg-transparent outline-none text-lg placeholder:text-[#999]"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.target.value.trim()) {
+                      navigate(`/search?q=${encodeURIComponent(e.target.value.trim())}`);
+                      setSearchOpen(false);
+                    }
+                  }}
                 />
                 <button onClick={() => setSearchOpen(false)} className="text-xs uppercase tracking-widest">Close</button>
               </div>
@@ -192,11 +206,21 @@ export default function Navbar() {
                 <button onClick={() => setMenuOpen(false)} data-testid="close-menu-btn"><X className="w-5 h-5" /></button>
               </div>
               <nav className="flex-1 px-8 py-10 flex flex-col gap-6">
+                {user && typeof user === "object" && (
+                  <motion.button
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 }}
+                    onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}
+                    className="font-display text-4xl md:text-5xl font-black text-[#D90429] hover:text-[#B00320] transition-colors text-left"
+                  >
+                    Dashboard
+                  </motion.button>
+                )}
                 {links.map((l, i) => (
                   <motion.a
                     key={l.label}
                     initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.05 }}
+                    transition={{ delay: 0.1 + (user && typeof user === "object" ? 1 : 0) * 0.05 + i * 0.05 }}
                     href={l.href}
                     onClick={() => setMenuOpen(false)}
                     className="font-display text-4xl md:text-5xl font-black hover:text-[#D90429] transition-colors no-underline text-black"

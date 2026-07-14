@@ -84,7 +84,7 @@ html, body {
   transform: rotateY(-28deg) rotateX(6deg);
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.book-3d:hover { transform: rotateY(-20deg) rotateX(4deg); }
+.book-3d { touch-action: none; }
 .book-3d__face {
   position: absolute;
   inset: 0;
@@ -125,8 +125,15 @@ html, body {
 
 .foil-gold { color: #d4af37; text-shadow: 0 0 8px rgba(212,175,55,0.35); }
 .foil-silver { color: #c0c0c0; text-shadow: 0 0 8px rgba(192,192,192,0.35); }
+.foil-rose-gold { color: #e0a8a0; text-shadow: 0 0 8px rgba(224,168,160,0.35); }
+.foil-copper { color: #b87333; text-shadow: 0 0 8px rgba(184,115,51,0.35); }
 .foil-red { color: #d90429; text-shadow: 0 0 8px rgba(217,4,41,0.35); }
+.foil-emerald { color: #50c878; text-shadow: 0 0 8px rgba(80,200,120,0.35); }
+.foil-sapphire { color: #0f52ba; text-shadow: 0 0 8px rgba(15,82,186,0.35); }
+.foil-amethyst { color: #9966cc; text-shadow: 0 0 8px rgba(153,102,204,0.35); }
+.foil-bronze { color: #cd7f32; text-shadow: 0 0 8px rgba(205,127,50,0.35); }
 .foil-black { color: #0a0a0a; }
+.foil-white { color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.35); }
 .foil-white { color: #ffffff; }
 
 /* Marquee */

@@ -304,7 +304,7 @@ export default function Hero3D() {
               className="mt-10 flex flex-wrap gap-4"
             >
               <a
-                href="#trending"
+                href="#collections"
                 data-testid="explore-books-btn"
                 className="group inline-flex items-center gap-3 bg-[#D90429] hover:bg-[#B00320] text-white px-8 py-4 no-underline transition-colors"
               >

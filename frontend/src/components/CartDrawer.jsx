@@ -1,10 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Minus, Plus, ShoppingBag, CreditCard, Smartphone } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, CreditCard, Smartphone, MapPin, ChevronDown, ChevronUp, Tag } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
-import { http } from "@/lib/api";
+import { http, validateCoupon, claimCoupon } from "@/lib/api";
 
 // Dynamically load Razorpay checkout script
 function loadRazorpayScript() {
@@ -23,11 +23,35 @@ export default function CartDrawer() {
   const { user } = useAuth() || {};
   const [stripeLoading, setStripeLoading] = useState(false);
   const [razorpayLoading, setRazorpayLoading] = useState(false);
+  const [showAddress, setShowAddress] = useState(false);
+  const [address, setAddress] = useState({ line1: "", line2: "", city: "", state: "", pincode: "", phone: "" });
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplied, setCouponApplied] = useState(null); // {discount_percent, discounted_total, message}
 
   const origin = window.location.origin;
 
-  // Strip to {id, qty} — prices are resolved server-side from the catalog
   const cartPayload = useMemo(() => cart.map(({ id, qty }) => ({ id, qty })), [cart]);
+
+  const addressPayload = useMemo(() => {
+    const { line1, city, state, pincode } = address;
+    return line1 && city && state && pincode ? address : null;
+  }, [address]);
+
+  const cartTotal = useMemo(() => totals.subtotal, [totals]);
+
+  const handleApplyCoupon = useCallback(async () => {
+    if (!couponCode.trim()) return;
+    try {
+      const r = await validateCoupon(couponCode.trim(), cartTotal);
+      if (r.valid) {
+        setCouponApplied(r);
+        toast.success(r.message);
+      } else {
+        setCouponApplied(null);
+        toast.error(r.message || "Invalid coupon");
+      }
+    } catch { toast.error("Could not validate coupon"); }
+  }, [couponCode, cartTotal]);
 
   const handleStripeCheckout = useCallback(async () => {
     if (!cart.length) return;
@@ -38,6 +62,7 @@ export default function CartDrawer() {
         customer_email: user?.email || null,
         success_url: `${origin}/checkout/success`,
         cancel_url: `${origin}/checkout/cancel`,
+        shipping_address: addressPayload,
       });
       window.location.href = data.url;
     } catch (err) {
@@ -57,6 +82,7 @@ export default function CartDrawer() {
       const { data: order } = await http.post("/checkout/razorpay/order", {
         items: cartPayload,
         customer_email: user?.email || null,
+        shipping_address: addressPayload,
       });
 
       const options = {
@@ -76,6 +102,7 @@ export default function CartDrawer() {
               razorpay_signature: response.razorpay_signature,
               customer_email: user?.email || null,
               items: cartPayload,
+              shipping_address: addressPayload,
             });
             clearCart();
             setCartOpen(false);
@@ -168,10 +195,65 @@ export default function CartDrawer() {
             {cart.length > 0 && (
               <div className="border-t border-black/5 px-8 py-6 space-y-3">
                 <div className="flex items-baseline justify-between mb-1">
-                  <span className="eyebrow">Subtotal</span>
+                  <span className="eyebrow">{couponApplied ? "Subtotal" : "Total"}</span>
                   <span className="font-display text-3xl font-black">₹{totals.subtotal.toLocaleString()}</span>
                 </div>
-                <p className="text-[11px] text-[#555]">Shipping and taxes calculated at checkout.</p>
+                {couponApplied && (
+                  <div className="flex items-baseline justify-between">
+                    <span className="eyebrow text-[#2E7D32]">Discount ({couponApplied.discount_percent}% off)</span>
+                    <span className="font-display text-2xl font-black text-[#2E7D32]">−₹{(totals.subtotal - couponApplied.discounted_total).toLocaleString()}</span>
+                  </div>
+                )}
+                {couponApplied && (
+                  <div className="flex items-baseline justify-between border-t border-black/5 pt-2 mt-2">
+                    <span className="eyebrow">Total</span>
+                    <span className="font-display text-3xl font-black">₹{couponApplied.discounted_total.toLocaleString()}</span>
+                  </div>
+                )}
+
+                {/* Coupon code */}
+                <div className="flex items-center gap-2">
+                  <Tag className="w-3.5 h-3.5 text-[#555]" />
+                  <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="Coupon code"
+                    className="flex-1 border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a] uppercase"
+                    onKeyDown={(e) => { if (e.key === "Enter") handleApplyCoupon(); }} />
+                  <button onClick={handleApplyCoupon}
+                    className="bg-[#0a0a0a] text-white px-3 py-2 text-[10px] uppercase tracking-[0.14em] font-semibold hover:bg-[#1a1a1a]">Apply</button>
+                </div>
+                {couponApplied && (
+                  <p className="text-xs text-[#2E7D32] font-semibold">{couponApplied.message}</p>
+                )}
+
+                {/* Shipping address toggle */}
+                <div>
+                  <button onClick={() => setShowAddress((v) => !v)}
+                    className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-[#555] hover:text-[#0a0a0a] transition-colors">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {showAddress ? "Hide" : "Add"} shipping address
+                    {showAddress ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  </button>
+                  {showAddress && (
+                    <div className="mt-3 space-y-2">
+                      <input placeholder="Address line 1" value={address.line1} onChange={(e) => setAddress((a) => ({ ...a, line1: e.target.value }))}
+                        className="w-full border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a]" />
+                      <input placeholder="Address line 2 (optional)" value={address.line2} onChange={(e) => setAddress((a) => ({ ...a, line2: e.target.value }))}
+                        className="w-full border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a]" />
+                      <div className="flex gap-2">
+                        <input placeholder="City" value={address.city} onChange={(e) => setAddress((a) => ({ ...a, city: e.target.value }))}
+                          className="flex-1 border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a]" />
+                        <input placeholder="State" value={address.state} onChange={(e) => setAddress((a) => ({ ...a, state: e.target.value }))}
+                          className="flex-1 border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a]" />
+                      </div>
+                      <div className="flex gap-2">
+                        <input placeholder="Pincode" value={address.pincode} onChange={(e) => setAddress((a) => ({ ...a, pincode: e.target.value }))}
+                          className="flex-1 border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a]" />
+                        <input placeholder="Phone (optional)" value={address.phone} onChange={(e) => setAddress((a) => ({ ...a, phone: e.target.value }))}
+                          className="flex-1 border border-black/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0a0a0a]" />
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Stripe — card payments */}
                 <button

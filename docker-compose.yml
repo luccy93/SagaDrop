@@ -1,0 +1,174 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: sagadrop
+    healthcheck:
+      test: mongosh --quiet --eval "db.adminCommand('ping')"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6382:6379"
+    healthcheck:
+      test: redis-cli ping
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    restart: unless-stopped
+    ports:
+      - "7701:7700"
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-dev-master-key}
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+    healthcheck:
+      test: wget -qO- http://127.0.0.1:7700/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      DB_NAME: sagadrop
+      REDIS_URL: redis://redis:6379
+      MEILI_URL: http://meilisearch:7700
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-dev-master-key}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-SagaDrop <noreply@sagadrop.com>}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sagadrop.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-SagaDrop@2026Admin!}
+      JWT_SECRET: ${JWT_SECRET:-docX52ZegEbOQVUT3nhWfJjiItvHYPzsFL47kaG1yC98qrmMANBSDxwR0ulK6p}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://hakidrop.com,https://www.hakidrop.com,http://localhost}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    volumes:
+      - uploads:/app/uploads
+    healthcheck:
+      test: python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health').read()"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_BACKEND_URL: ''
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5001:5000"
+    healthcheck:
+      test: wget -qO- http://127.0.0.1:5000/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: nginx -t && wget -qO- http://127.0.0.1:80/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v3.5.5
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: wget -qO- http://localhost:9090/-/healthy || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  loki:
+    image: grafana/loki:3.4.2
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: wget -qO- http://localhost:3100/ready || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:13.0.3
+    restart: unless-stopped
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    healthcheck:
+      test: wget -qO- http://localhost:3000/api/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  mongo_data:
+  meili_data:
+  uploads:
+  prometheus_data:
+  grafana_data:
