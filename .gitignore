@@ -30,9 +30,12 @@ next-env.d.ts
 dist/
 dist
 
-# Replit local infrastructure
+# Replit / Emergent infra
 .local/
 memory/
+.emergent/
+.replit
+replit.md
 
 # Environment files (comprehensive coverage)
 
