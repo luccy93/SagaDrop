@@ -215,11 +215,11 @@ class TestShare:
         assert r.status_code == 404
 
 
-# ────────────────────────── AI recommend (Claude) ─────────────────
-class TestAIRecommend:
+# ────────────────────────── Recommendations ───────────────────────
+class TestRecommend:
     def test_recommend_fantasy(self, client):
         r = client.post(
-            f"{API}/ai/recommend",
+            f"{API}/recommend",
             json={"mood": "Fantasy", "tone": "epic dragons"},
             timeout=90,
         )

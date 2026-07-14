@@ -1,6 +1,6 @@
 jest.mock("@/components/PageLayout", () => "div");
 jest.mock("@/components/BookCard", () => "div");
-jest.mock("@/lib/api", () => ({ aiRecommend: () => Promise.resolve([]) }));
+jest.mock("@/lib/api", () => ({ getRecommend: () => Promise.resolve([]) }));
 jest.mock("framer-motion", () => {
   const React = require("react");
   return {
@@ -11,12 +11,12 @@ jest.mock("framer-motion", () => {
 jest.mock("lucide-react");
 
 import { render, screen } from "@testing-library/react";
-import AILibrarianPage from "./AILibrarianPage";
+import BookAdvisorPage from "./BookAdvisorPage";
 
-describe("AILibrarianPage", () => {
+describe("BookAdvisorPage", () => {
   it("renders heading", () => {
-    render(<AILibrarianPage />);
-    expect(screen.getByText(/AI Librarian/)).toBeInTheDocument();
+    render(<BookAdvisorPage />);
+    expect(screen.getByText(/Book Advisor/)).toBeInTheDocument();
   });
 
   it("renders mood chips", () => {

@@ -1,11 +1,11 @@
 export default function Marquee() {
   const items = [
     "New Season 2026",
-    "AI Powered Recommendations",
+    "Curated Recommendations",
     "Custom Book Editions",
     "Free Shipping over ₹999",
     "Every Story Begins Here",
-    "Nano Banana Cover Studio",
+    "Custom Cover Studio",
   ];
   const doubled = [...items, ...items, ...items];
   return (

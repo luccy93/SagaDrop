@@ -24,7 +24,7 @@ describe("CareersPage", () => {
   it("renders open roles", () => {
     render(<CareersPage />);
     expect(screen.getByText("Senior Frontend Engineer")).toBeInTheDocument();
-    expect(screen.getByText("AI / ML Engineer")).toBeInTheDocument();
+    expect(screen.getByText("Recommendation Engineer")).toBeInTheDocument();
     expect(screen.getByText("Editorial Curator")).toBeInTheDocument();
   });
 

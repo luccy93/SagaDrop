@@ -16,7 +16,7 @@ const COLS = [
     title: "Discover",
     links: [
       { label: "Categories",      to: "/categories" },
-      { label: "AI Librarian",    to: "/ai-librarian" },
+      { label: "Book Advisor",    to: "/book-advisor" },
       { label: "Book Customizer", to: "/book-customizer" },
       { label: "Authors",         to: "/authors" },
       { label: "Reviews",         to: "/reviews" },
@@ -58,7 +58,7 @@ export default function Footer() {
             </Link>
             <p className="mt-6 max-w-md text-sm text-[#555] leading-relaxed">
               A premium marketplace for readers who treat books as heirlooms.
-              Curated by humans, augmented by AI, printed with love.
+              Curated by readers, for readers, printed with love.
             </p>
             <div className="mt-8 flex gap-6 text-xs uppercase tracking-[0.18em] font-semibold">
               {[

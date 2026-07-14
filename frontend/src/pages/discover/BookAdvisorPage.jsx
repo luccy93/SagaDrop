@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Mic, BookOpen, Loader2 } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 import BookCard from "@/components/BookCard";
-import { aiRecommend } from "@/lib/api";
+import { getRecommend } from "@/lib/api";
 
 const MOODS   = ["Adventurous", "Romantic", "Mysterious", "Inspirational", "Dark & Gritty", "Light-hearted", "Philosophical", "Thrilling"];
 const TONES   = ["Lyrical", "Fast-paced", "Slow burn", "Humorous", "Dramatic", "Poetic", "Cinematic", "Conversational"];
 
-export default function AILibrarianPage() {
+export default function BookAdvisorPage() {
   const [mood, setMood]       = useState("");
   const [tone, setTone]       = useState("");
   const [prompt, setPrompt]   = useState("");
@@ -21,7 +21,7 @@ export default function AILibrarianPage() {
     setLoading(true);
     setAsked(true);
     try {
-      const result = await aiRecommend(mood || prompt, tone);
+      const result = await getRecommend(mood || prompt, tone);
       setBooks(Array.isArray(result) ? result : result.books || []);
     } catch {
       setBooks([]);
@@ -36,9 +36,9 @@ export default function AILibrarianPage() {
       <div className="pt-36 pb-16 bg-[#0a0a0a] text-white">
         <div className="max-w-[1600px] mx-auto px-6 md:px-10">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <p className="eyebrow text-[#D90429] mb-4">● Discover / AI Librarian</p>
+            <p className="eyebrow text-[#D90429] mb-4">● Discover / Book Advisor</p>
             <h1 className="font-display text-6xl md:text-8xl font-black tracking-[-0.02em] leading-[0.9]">
-              Your AI<br />Librarian.
+              Your Book<br />Advisor.
             </h1>
             <p className="mt-6 text-sm text-white/60 max-w-lg leading-relaxed">
               Describe a feeling, a mood, or what you're craving in a story — and we'll find exactly the right book for you.
@@ -109,7 +109,7 @@ export default function AILibrarianPage() {
                 ) : books.length === 0 ? (
                   <div className="text-center py-16">
                     <BookOpen className="w-10 h-10 mx-auto mb-4 text-[#D90429]" />
-                    <p className="text-sm text-[#555]">The AI Librarian needs a working AI connection. Try again when AI Studio is configured.</p>
+                    <p className="text-sm text-[#555]">The book advisor is taking a little longer than expected. Try again.</p>
                   </div>
                 ) : (
                   <>

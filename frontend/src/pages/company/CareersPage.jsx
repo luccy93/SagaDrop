@@ -5,7 +5,7 @@ import PageLayout from "@/components/PageLayout";
 
 const ROLES = [
   { title: "Senior Frontend Engineer",   team: "Engineering",   loc: "Mumbai / Remote",  type: "Full-time" },
-  { title: "AI / ML Engineer",            team: "AI Studio",     loc: "Bangalore / Remote", type: "Full-time" },
+  { title: "Recommendation Engineer",     team: "Curation",      loc: "Bangalore / Remote", type: "Full-time" },
   { title: "Editorial Curator",           team: "Books",         loc: "Mumbai",           type: "Full-time" },
   { title: "Brand Designer",             team: "Creative",      loc: "Remote",           type: "Full-time" },
   { title: "Growth Marketing Manager",   team: "Marketing",     loc: "Mumbai / Delhi",   type: "Full-time" },

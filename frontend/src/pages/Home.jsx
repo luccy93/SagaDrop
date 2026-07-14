@@ -3,7 +3,7 @@ import Hero3D from "@/components/Hero3D";
 import Marquee from "@/components/Marquee";
 import TrendingBooks from "@/components/TrendingBooks";
 import Categories from "@/components/Categories";
-import AIRecommendationStudio from "@/components/AIRecommendationStudio";
+import RecommendationStudio from "@/components/RecommendationStudio";
 import BookCustomizer from "@/components/BookCustomizer";
 import Collections from "@/components/Collections";
 import Authors from "@/components/Authors";
@@ -20,7 +20,7 @@ export default function Home() {
       <Marquee />
       <TrendingBooks />
       <Categories />
-      <AIRecommendationStudio />
+      <RecommendationStudio />
       <BookCustomizer />
       <Collections />
       <Authors />

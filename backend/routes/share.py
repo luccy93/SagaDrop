@@ -117,7 +117,7 @@ async def get_share_page(sid: str, request: Request):
     material = html_lib.escape(doc.get("material") or "Hardcover")
     cover_url = f"{base}/api/share/{sid}/cover"
     app_url = f"{base}/share/{sid}"
-    desc = f"A bespoke AI-designed {material} edition{' by ' + author if author else ''}, created on SagaDrop."
+    desc = f"A bespoke {material} edition{' by ' + author if author else ''}, created on SagaDrop."
     page = f"""<!DOCTYPE html>
 <html lang="en">
 <head>

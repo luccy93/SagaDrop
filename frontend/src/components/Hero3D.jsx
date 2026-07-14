@@ -294,7 +294,7 @@ export default function Hero3D() {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="mt-8 text-[15px] md:text-base text-[#555] max-w-[440px] leading-relaxed"
             >
-              AI Powered Story Marketplace — timeless classics, modern bestsellers,
+              Premium Story Marketplace — timeless classics, modern bestsellers,
               and cinematic new releases, curated for every reader.
             </motion.p>
 

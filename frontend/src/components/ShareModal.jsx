@@ -26,7 +26,7 @@ export default function ShareModal({ open, onClose, share, cover, title, author 
   const [copied, setCopied] = useState(false);
   if (!share) return null;
 
-  const shareText = `"${title}" — my custom AI-designed edition on SagaDrop`;
+  const shareText = `"${title}" — my custom-designed edition on SagaDrop`;
 
   const copyLink = async () => {
     try {

@@ -29,10 +29,8 @@ export const deleteBook = (id) => http.delete(`/books/${id}`).then((r) => r.data
 export const fetchCategories = () => http.get("/categories").then((r) => r.data);
 export const subscribeNewsletter = (email) =>
   http.post("/newsletter", { email }).then((r) => r.data);
-export const aiRecommend = (mood, tone) =>
-  http.post("/ai/recommend", { mood, tone }).then((r) => r.data);
-export const aiGenerateCover = (payload) =>
-  http.post("/ai/generate-cover", payload, { timeout: 120000 }).then((r) => r.data);
+export const getRecommend = (mood, tone) =>
+  http.post("/recommend", { mood, tone }).then((r) => r.data);
 export const createShare = (payload) => http.post("/share", payload).then((r) => r.data);
 export const fetchShare = (id) => http.get(`/share/${id}`).then((r) => r.data);
 

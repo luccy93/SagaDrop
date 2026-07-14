@@ -1,4 +1,4 @@
-"""SagaDrop backend — AI-powered story book marketplace."""
+"""SagaDrop backend — premium story book marketplace."""
 import logging
 import os
 
@@ -11,7 +11,7 @@ from config import CORS_ORIGINS
 from database import client, db
 from routes.books import router as books_router
 from routes.newsletter import router as newsletter_router
-from routes.ai import router as ai_router
+from routes.recommendations import router as rec_router
 from routes.share import router as share_router
 from routes.auth import router as auth_router
 from routes.checkout import router as checkout_router
@@ -64,7 +64,7 @@ async def public_config():
 
 api_router.include_router(books_router)
 api_router.include_router(newsletter_router)
-api_router.include_router(ai_router)
+api_router.include_router(rec_router)
 api_router.include_router(share_router)
 api_router.include_router(auth_router)
 api_router.include_router(checkout_router)

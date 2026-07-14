@@ -94,7 +94,7 @@ export default function SharePage() {
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="eyebrow text-[#D90429] mb-4">● Custom AI Edition</p>
+              <p className="eyebrow text-[#D90429] mb-4">● Custom Edition</p>
               <h1
                 data-testid="share-page-title"
                 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-[-0.02em] leading-[0.92]"
@@ -135,9 +135,9 @@ export default function SharePage() {
               </div>
 
               <p className="mt-8 text-[#555] leading-relaxed max-w-md">
-                This one-of-a-kind {share.material} edition was designed with AI in the SagaDrop
+                This one-of-a-kind {share.material} edition was designed in the SagaDrop
                 Book Customizer. Create your own bespoke edition — pick the
-                material, foil, typography, trim size, paper, and finish, and let AI paint the rest.
+                material, foil, typography, trim size, paper, and finish.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-4">

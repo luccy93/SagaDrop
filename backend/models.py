@@ -65,19 +65,6 @@ class RecommendResponse(BaseModel):
     picks: List[RecommendedBook]
 
 
-class CoverRequest(BaseModel):
-    title: str
-    author: Optional[str] = None
-    material: Optional[str] = "Hardcover"
-    style: Optional[str] = "epic fantasy illustration"
-    foil: Optional[str] = "gold"
-
-
-class CoverResponse(BaseModel):
-    mime_type: str
-    data: str  # base64
-
-
 class ShareRequest(BaseModel):
     title: str
     author: Optional[str] = None

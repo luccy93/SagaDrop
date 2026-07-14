@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, ArrowRight, Wand2 } from "lucide-react";
-import { aiRecommend } from "@/lib/api";
+import { getRecommend } from "@/lib/api";
 import { toast } from "sonner";
 
 const MOODS = [
@@ -11,7 +11,7 @@ const MOODS = [
   { key: "Mystery", label: "Mystery", sub: "Puzzles & Shadows", bg: "#f6f6f6", accent: "#0a0a0a" },
 ];
 
-export default function AIRecommendationStudio() {
+export default function RecommendationStudio() {
   const [mood, setMood] = useState("Fantasy");
   const [tone, setTone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,10 +21,10 @@ export default function AIRecommendationStudio() {
     setLoading(true);
     setResult(null);
     try {
-      const data = await aiRecommend(mood, tone);
+      const data = await getRecommend(mood, tone);
       setResult(data);
     } catch (e) {
-      toast.error("The librarian is resting. Try again in a moment.");
+      toast.error("Could not fetch recommendations. Try again.");
     } finally {
       setLoading(false);
     }
@@ -32,23 +32,22 @@ export default function AIRecommendationStudio() {
 
   return (
     <section
-      id="ai-studio"
-      data-testid="ai-studio-section"
+      id="recommendation-studio"
+      data-testid="recommendation-studio-section"
       className="py-24 md:py-32 bg-[#0a0a0a] text-white overflow-hidden relative"
     >
       <div className="max-w-[1600px] mx-auto px-6 md:px-10">
         <div className="grid lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-16 items-start">
           <div>
-            <p className="eyebrow text-[#D90429] mb-4">● 03 / AI Powered</p>
+            <p className="eyebrow text-[#D90429] mb-4">● 03 / Curated</p>
             <h2 className="font-display text-5xl md:text-7xl font-black tracking-[-0.02em] leading-[0.9]">
-              AI Book<br />
+              Book<br />
               Recommendation<br />
               <span className="italic font-medium text-white/60">Studio.</span>
             </h2>
             <p className="mt-8 max-w-lg text-[15px] text-white/60 leading-relaxed">
-              Tell us your mood. Our AI librarian — powered by Claude — reads
-              between the lines of thousands of titles to pull the exact book
-              you didn't know you needed.
+              Tell us your mood. Our curators will hand-pick the perfect titles
+              from our catalog — books you didn't know you needed.
             </p>
 
             <div className="mt-10">
@@ -89,7 +88,7 @@ export default function AIRecommendationStudio() {
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               <span className="text-[13px] font-semibold tracking-[0.15em] uppercase">
-                {loading ? "Reading Your Mind…" : "Generate Recommendations"}
+                {loading ? "Finding Your Books…" : "Get Recommendations"}
               </span>
             </button>
           </div>
@@ -98,7 +97,7 @@ export default function AIRecommendationStudio() {
             <div className="border border-white/10 p-8 md:p-10 bg-white/[0.02]">
               <div className="flex items-center gap-2 mb-6">
                 <Wand2 className="w-4 h-4 text-[#D90429]" />
-                <span className="eyebrow text-white/60">AI Librarian's Response</span>
+                <span className="eyebrow text-white/60">Curator's Picks</span>
               </div>
               <AnimatePresence mode="wait">
                 {loading && (
@@ -116,7 +115,7 @@ export default function AIRecommendationStudio() {
                 {!loading && !result && (
                   <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <p className="text-white/50 text-sm leading-relaxed">
-                      Pick a mood and hit generate — the librarian will surface 4 books tuned to your vibe,
+                      Pick a mood and hit generate — our curators will surface 4 books tuned to your vibe,
                       with an editorial reason for every pick.
                     </p>
                   </motion.div>
@@ -128,7 +127,7 @@ export default function AIRecommendationStudio() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.6 }}
-                    data-testid="ai-result"
+                    data-testid="curated-result"
                   >
                     <p className="font-display italic text-lg md:text-xl text-white/90 leading-snug mb-6">
                       "{result.summary}"

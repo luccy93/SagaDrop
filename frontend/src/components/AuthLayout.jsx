@@ -19,7 +19,7 @@ export default function AuthLayout({ tagline, headline, children }) {
           </h1>
         </div>
         <p className="text-[11px] uppercase tracking-[0.25em] text-white/50">
-          AI Powered Story Marketplace · Est. 2026
+          Premium Story Marketplace · Est. 2026
         </p>
       </div>
 

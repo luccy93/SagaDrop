@@ -13,7 +13,7 @@ export default function BookCustomizerPage() {
               Design Your<br />Book.
             </h1>
             <p className="mt-6 text-sm text-[#555] max-w-lg leading-relaxed">
-              Choose your cover, foil, material, and generate a custom AI cover — then add it to your cart.
+              Choose your cover, foil, material, and generate a custom cover — then add it to your cart.
             </p>
           </motion.div>
         </div>

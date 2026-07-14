@@ -31,7 +31,7 @@ export default function Newsletter() {
               <span className="italic text-white/40 font-medium">Never Spam.</span>
             </motion.h2>
             <p className="mt-8 max-w-lg text-white/60 text-sm leading-relaxed">
-              Editor's picks, upcoming drops, and the occasional AI-generated cover
+              Editor's picks, upcoming drops, and exclusive covers
               you'll want to frame — delivered every Sunday.
             </p>
           </div>

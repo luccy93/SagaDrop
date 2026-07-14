@@ -3,11 +3,11 @@ import { Download, ExternalLink } from "lucide-react";
 import PageLayout from "@/components/PageLayout";
 
 const PRESS = [
-  { pub: "The Hindu",       date: "June 2026", headline: "SagaDrop redefines what a bookstore can be in the age of AI", href: "#" },
+  { pub: "The Hindu",       date: "June 2026", headline: "SagaDrop redefines what a bookstore can be in the digital age", href: "#" },
   { pub: "Forbes India",    date: "May 2026",  headline: "The startup turning book-buying into a luxury experience", href: "#" },
   { pub: "Mint",            date: "April 2026",headline: "How SagaDrop is building India's Awwwards-winning marketplace for stories", href: "#" },
   { pub: "YourStory",       date: "March 2026",headline: "SagaDrop crosses 2 million readers in 18 months", href: "#" },
-  { pub: "Business Standard",date:"Feb 2026",  headline: "AI-powered curation: inside SagaDrop's editorial engine", href: "#" },
+  { pub: "Business Standard",date:"Feb 2026",  headline: "Inside SagaDrop's editorial engine — books curated by real readers", href: "#" },
 ];
 
 export default function PressPage() {

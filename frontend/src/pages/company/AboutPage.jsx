@@ -11,7 +11,7 @@ const STATS = [
 const TEAM = [
   { name: "Aryan Kapoor",   role: "Founder & CEO",        img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80" },
   { name: "Nisha Mehta",    role: "Chief Creative Officer", img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&auto=format&fit=crop&q=80" },
-  { name: "Dev Krishnan",   role: "Head of AI",            img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80" },
+  { name: "Dev Krishnan",   role: "Head of Curation",       img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80" },
   { name: "Priya Sharma",   role: "Chief Librarian",       img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80" },
 ];
 
@@ -53,7 +53,7 @@ export default function AboutPage() {
             <h2 className="font-display text-5xl md:text-6xl font-black tracking-[-0.02em] leading-[0.9] mb-8">We believe books are heirlooms.</h2>
             <div className="space-y-5 text-sm text-[#555] leading-relaxed">
               <p>Founded in Mumbai in 2023, SagaDrop started as a curated bookshop with twelve titles and a dream of changing how India experiences literature. Today, we serve readers in 180 countries.</p>
-              <p>We use AI to help you discover stories you didn't know you were looking for — while keeping every recommendation rooted in genuine editorial care. Our librarians read every book we carry.</p>
+              <p>We help you discover stories you didn't know you were looking for — with every recommendation rooted in genuine editorial care. Our curators read every book we carry.</p>
               <p>From standard paperbacks to hand-bound Collector Editions with foil embossing and marbled endpapers, we believe the physical book is an art object worthy of reverence.</p>
             </div>
           </motion.div>

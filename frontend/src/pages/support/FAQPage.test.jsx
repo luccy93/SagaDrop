@@ -16,7 +16,7 @@ describe("FAQPage", () => {
     render(<FAQPage />);
     expect(screen.getByText("How long does delivery take?")).toBeInTheDocument();
     expect(screen.getByText("Can I return a book?")).toBeInTheDocument();
-    expect(screen.getByText("How does the AI Librarian work?")).toBeInTheDocument();
+    expect(screen.getByText("How does the Book Advisor work?")).toBeInTheDocument();
     expect(screen.getByText("What payment methods do you accept?")).toBeInTheDocument();
   });
 

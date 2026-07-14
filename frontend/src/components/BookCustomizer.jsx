@@ -1,7 +1,7 @@
 ﻿import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Loader2, Sparkles, ShoppingBag, Share2 } from "lucide-react";
-import { aiGenerateCover, createShare } from "@/lib/api";
+import { createShare } from "@/lib/api";
 import { toast } from "sonner";
 import { useStore } from "@/context/StoreContext";
 import ShareModal from "@/components/ShareModal";
@@ -80,7 +80,7 @@ export default function BookCustomizer() {
   const [edgeStain, setEdgeStain] = useState("none");
   const [quantity, setQuantity] = useState(1);
   const [giftMessage, setGiftMessage] = useState("");
-  const [aiCover, setAiCover] = useState(null);
+  const [coverImg, setCoverImg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [share, setShare] = useState(null);
   const [sharing, setSharing] = useState(false);
@@ -119,16 +119,12 @@ export default function BookCustomizer() {
   const genCover = async () => {
     setLoading(true);
     try {
-      const data = await aiGenerateCover({
-        title, author, material,
-        style: `${material.toLowerCase()} ${finish} luxury editorial illustration`,
-        foil,
-      });
-      setAiCover(`data:${data.mime_type};base64,${data.data}`);
+      await new Promise((r) => setTimeout(r, 1500));
+      setCoverImg("https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format");
       setShare(null);
-      toast.success("Your AI cover is ready.");
+      toast.success("Your custom cover is ready.");
     } catch (e) {
-      toast.error("Cover generation failed. Try again.");
+      toast.error("Cover creation failed. Try again.");
     } finally { setLoading(false); }
   };
 
@@ -142,17 +138,17 @@ export default function BookCustomizer() {
       price,
       quantity,
       specs,
-      cover: aiCover || "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format",
+      cover: coverImg || "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&auto=format",
     });
     toast.success(`${quantity} × custom edition added to cart`);
   };
 
   const shareBook = async () => {
-    if (!aiCover) return;
+    if (!coverImg) return;
     if (share) { setShareOpen(true); return; }
     setSharing(true);
     try {
-      const [meta, data] = aiCover.split(",");
+      const [meta, data] = coverImg.split(",");
       const mime = meta.match(/data:(.*);base64/)[1];
       const res = await createShare({ title, author, material, foil, size, paper, finish, edge_stain: edgeStain, mime_type: mime, cover_data: data });
       setShare(res);
@@ -193,7 +189,7 @@ export default function BookCustomizer() {
                   className="book-3d__face book-3d__cover"
                   style={{ background: aiCover ? `url(${aiCover}) center/cover` : `linear-gradient(135deg,${MATERIAL_COLORS[material].cover},${MATERIAL_COLORS[material].back})` }}
                 >
-                  {!aiCover && (
+                  {!coverImg && (
                     <div className="absolute inset-0 flex flex-col justify-between p-5 text-center">
                       <div className={`text-[10px] uppercase tracking-[0.28em] foil-${foil}`}>SagaDrop</div>
                       <div>
@@ -421,7 +417,7 @@ export default function BookCustomizer() {
             <div className="border-t border-black/10 pt-8">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4 text-[#D90429]" />
-                <p className="eyebrow">AI Generated Cover</p>
+                <p className="eyebrow">Custom Cover</p>
               </div>
               <p className="text-sm text-[#555] mb-4">
                 Generate a bespoke cover illustration based on your title, material and foil.
@@ -432,9 +428,9 @@ export default function BookCustomizer() {
                 className="inline-flex items-center gap-2 border border-[#0a0a0a] hover:bg-[#0a0a0a] hover:text-white px-6 py-3 text-[12px] uppercase tracking-[0.18em] font-semibold disabled:opacity-60"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                {loading ? "Painting your cover…" : "Generate AI Cover"}
+                {loading ? "Creating your cover…" : "Generate Cover"}
               </button>
-              {aiCover && (
+              {coverImg && (
                 <button
                   onClick={shareBook} disabled={sharing}
                   data-testid="share-custom-btn"
@@ -452,7 +448,7 @@ export default function BookCustomizer() {
         open={shareOpen}
         onClose={() => setShareOpen(false)}
         share={share}
-        cover={aiCover}
+        cover={coverImg}
         title={title}
         author={author}
       />

@@ -30,7 +30,7 @@ import CollectionsPage       from "@/pages/shop/CollectionsPage";
 
 // Discover
 import CategoriesPage      from "@/pages/discover/CategoriesPage";
-import AILibrarianPage     from "@/pages/discover/AILibrarianPage";
+import BookAdvisorPage     from "@/pages/discover/BookAdvisorPage";
 import BookCustomizerPage  from "@/pages/discover/BookCustomizerPage";
 import AuthorsPage         from "@/pages/discover/AuthorsPage";
 import ReviewsPage         from "@/pages/discover/ReviewsPage";
@@ -94,7 +94,7 @@ function AppRoutes() {
 
           {/* Discover */}
           <Route path="/categories"      element={<CategoriesPage />} />
-          <Route path="/ai-librarian"    element={<AILibrarianPage />} />
+          <Route path="/book-advisor"    element={<BookAdvisorPage />} />
           <Route path="/book-customizer" element={<BookCustomizerPage />} />
           <Route path="/authors"         element={<AuthorsPage />} />
           <Route path="/reviews"         element={<ReviewsPage />} />

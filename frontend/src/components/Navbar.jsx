@@ -9,7 +9,7 @@ const links = [
   { label: "Home", href: "/" },
   { label: "Trending", href: "/#trending" },
   { label: "Categories", href: "/#categories" },
-  { label: "AI Studio", href: "/#ai-studio" },
+  { label: "Recommend", href: "/#recommendation-studio" },
   { label: "Customize", href: "/#customizer" },
   { label: "Collections", href: "/#collections" },
   { label: "Authors", href: "/#authors" },
