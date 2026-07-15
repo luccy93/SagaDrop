@@ -8,7 +8,12 @@ load_dotenv(ROOT_DIR / ".env")
 MONGO_URL = os.environ.get("MONGO_URL", "")
 DB_NAME = os.environ.get("DB_NAME", "sagadrop")
 
-CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
+_raw = os.environ.get("CORS_ORIGINS", "")
+CORS_ORIGINS = [o.strip() for o in _raw.split(",") if o.strip()] or [
+    "https://saga-drop-gules.vercel.app",
+    "https://saga-drop-git-main-luccy93s-projects.vercel.app",
+    "http://localhost:3000",
+]
 
 # Stripe
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
