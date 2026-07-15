@@ -59,6 +59,8 @@ async def public_config():
     import os
     return {
         "google_client_id": os.environ.get("GOOGLE_CLIENT_ID", ""),
+        "cors_origins": CORS_ORIGINS,
+        "raw_cors": os.environ.get("CORS_ORIGINS", "(not set)"),
     }
 
 
