@@ -14,7 +14,7 @@ services:
       - key: DB_NAME
         value: sagadrop
       - key: CORS_ORIGINS
-        value: https://sagadrop.vercel.app,http://localhost:3000
+        value: https://saga-drop-gules.vercel.app,https://saga-drop-git-main-luccy93s-projects.vercel.app,http://localhost:3000
       - key: RESEND_API_KEY
         sync: false
       - key: SMTP_HOST
