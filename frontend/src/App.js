@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { StoreProvider } from "@/context/StoreContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import SmoothScroll from "@/components/SmoothScroll";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Core pages
 import Home            from "@/pages/Home";
@@ -71,7 +72,7 @@ function AppRoutes() {
         <SmoothScroll />
         <Routes>
           {/* Core */}
-          <Route path="/"                 element={<Home />} />
+          <Route path="/"                 element={<ErrorBoundary><Home /></ErrorBoundary>} />
           <Route path="/share/:id"        element={<SharePage />} />
           <Route path="/login"            element={<LoginPage />} />
           <Route path="/signup"           element={<SignupPage />} />
@@ -144,11 +145,13 @@ function AppRoutes() {
 export default function App() {
   return (
     <div className="App">
-      <AuthProvider>
-        <StoreProvider>
-          <AppRoutes />
-        </StoreProvider>
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <StoreProvider>
+            <AppRoutes />
+          </StoreProvider>
+        </AuthProvider>
+      </ErrorBoundary>
     </div>
   );
 }
