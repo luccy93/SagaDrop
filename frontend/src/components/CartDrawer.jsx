@@ -70,7 +70,7 @@ export default function CartDrawer() {
       toast.error(msg);
       setStripeLoading(false);
     }
-  }, [cart, cartPayload, user, origin]);
+  }, [cart, cartPayload, user, origin, addressPayload]);
 
   const handleRazorpayCheckout = useCallback(async () => {
     if (!cart.length) return;
@@ -123,7 +123,7 @@ export default function CartDrawer() {
       toast.error(msg);
       setRazorpayLoading(false);
     }
-  }, [cart, cartPayload, user, totals, clearCart, setCartOpen, origin]);
+  }, [cart, cartPayload, user, totals, clearCart, setCartOpen, origin, addressPayload]);
 
   return (
     <AnimatePresence>
