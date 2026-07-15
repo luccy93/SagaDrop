@@ -187,7 +187,7 @@ export default function BookCustomizer() {
               >
                 <div
                   className="book-3d__face book-3d__cover"
-                  style={{ background: aiCover ? `url(${aiCover}) center/cover` : `linear-gradient(135deg,${MATERIAL_COLORS[material].cover},${MATERIAL_COLORS[material].back})` }}
+                    style={{ background: coverImg ? `url(${coverImg}) center/cover` : `linear-gradient(135deg,${MATERIAL_COLORS[material].cover},${MATERIAL_COLORS[material].back})` }}
                 >
                   {!coverImg && (
                     <div className="absolute inset-0 flex flex-col justify-between p-5 text-center">
