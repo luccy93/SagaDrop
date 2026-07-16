@@ -88,7 +88,11 @@ def _otp_html(otp: str, name: str = "") -> str:
 </div>"""
 
 
-async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
+import asyncio
+import functools
+
+def _send_email_sync(email: str, otp: str, name: str = "") -> bool:
+    """Synchronous email sender — runs in a thread to avoid blocking the event loop."""
     html = _otp_html(otp, name)
     subject = f"Your SagaDrop verification code: {otp}"
 
@@ -108,7 +112,7 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
         except Exception:
             logger.warning("Resend failed")
 
-    # 2) SMTP fallback — only attempt if SMTP_USER is also set (fully configured)
+    # 2) SMTP fallback — only if SMTP_USER is set
     smtp_host = os.environ.get("SMTP_HOST", "")
     smtp_user = os.environ.get("SMTP_USER", "")
     if smtp_host and smtp_user:
@@ -124,7 +128,7 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
             msg["From"] = smtp_from
             msg["To"] = email
 
-            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as s:
                 s.starttls()
                 s.login(smtp_user, smtp_pass)
                 s.send_message(msg)
@@ -133,6 +137,12 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
             logger.warning("SMTP send failed: %s", exc)
 
     return False
+
+
+async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
+    """Send OTP email in a thread so it never blocks the event loop."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, functools.partial(_send_email_sync, email, otp, name))
 
 
 # ─── Public API ───────────────────────────────────────────────────────────────
