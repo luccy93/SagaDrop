@@ -163,44 +163,9 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
         raise HTTPException(503, "Database not configured")
     email = email.lower().strip()
 
-    # --- diagnostic: strip everything below to isolate crash ---
-    purpose = purpose  # keep the validated input
-    email = email
-
-    if purpose == "signup":
-        # Only do the minimal DB call — skip bcrypt
-        existing_user = await db.users.find_one({"email": email})
-        if existing_user:
-            raise HTTPException(409, "An account with this email already exists.")
-        if not name or not password:
-            raise HTTPException(422, "Name and password are required for signup.")
-        if len(password) < 6:
-            raise HTTPException(422, "Password must be at least 6 characters.")
-    elif purpose in ("login", "reset"):
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(404, "No account found with this email.")
-    else:
-        raise HTTPException(422, "Invalid purpose.")
-
-    # Minimal: just save OTP and return
+    # --- Skip DB entirely — just generate and return OTP ---
     otp = _generate_otp()
-    now = datetime.now(timezone.utc)
-    doc = {
-        "email": email,
-        "purpose": purpose,
-        "otp_hash": _hash_otp(otp),
-        "expires_at": (now + timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(),
-        "created_at": now.isoformat(),
-        "attempts": 0,
-    }
-    if purpose == "signup":
-        doc["name"] = name.strip()
-
-    await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
-
-    result: dict = {"ok": True, "dev_otp": otp}
-    return result
+    return {"ok": True, "dev_otp": otp, "step": "no-db"}
 
 
 async def verify_otp(email: str, otp: str, purpose: str, response: Response) -> dict:
