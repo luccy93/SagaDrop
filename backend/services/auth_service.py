@@ -213,18 +213,17 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
 
     await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
 
-    dev_mode = not os.environ.get("RESEND_API_KEY", "")
-    try:
-        sent = await asyncio.wait_for(_send_otp_email(email, otp, name or ""), timeout=20)
-    except asyncio.TimeoutError:
-        logger.warning("OTP email send timed out — falling back to dev mode")
-        sent = False
-
-    if not sent and not dev_mode:
-        raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
-
-    result: dict = {"ok": True, "sent": sent}
-    if dev_mode:
+    result: dict = {"ok": True}
+    if os.environ.get("RESEND_API_KEY", ""):
+        try:
+            sent = await asyncio.wait_for(_send_otp_email(email, otp, name or ""), timeout=20)
+        except asyncio.TimeoutError:
+            logger.warning("OTP email send timed out")
+            sent = False
+        if not sent:
+            raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
+        result["sent"] = sent
+    else:
         result["dev_otp"] = otp
     return result
 
