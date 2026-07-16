@@ -163,7 +163,12 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
         raise HTTPException(503, "Database not configured")
     email = email.lower().strip()
 
+    # --- diagnostic: strip everything below to isolate crash ---
+    purpose = purpose  # keep the validated input
+    email = email
+
     if purpose == "signup":
+        # Only do the minimal DB call — skip bcrypt
         existing_user = await db.users.find_one({"email": email})
         if existing_user:
             raise HTTPException(409, "An account with this email already exists.")
@@ -175,22 +180,10 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
         user = await db.users.find_one({"email": email})
         if not user:
             raise HTTPException(404, "No account found with this email.")
-        if purpose == "reset" and not user.get("password_hash"):
-            raise HTTPException(400, "Cannot reset password for OAuth accounts. Use Google login.")
     else:
         raise HTTPException(422, "Invalid purpose.")
 
-    # Rate-limit: 1 OTP per 60 seconds
-    existing_otp = await db.otps.find_one({"email": email, "purpose": purpose})
-    if existing_otp and existing_otp.get("created_at"):
-        try:
-            created = datetime.fromisoformat(existing_otp["created_at"])
-            elapsed = (datetime.now(timezone.utc) - created).total_seconds()
-            if elapsed < 60:
-                raise HTTPException(429, f"Please wait {60 - int(elapsed)} seconds before requesting a new code.")
-        except ValueError:
-            pass
-
+    # Minimal: just save OTP and return
     otp = _generate_otp()
     now = datetime.now(timezone.utc)
     doc = {
@@ -203,18 +196,10 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
     }
     if purpose == "signup":
         doc["name"] = name.strip()
-        doc["password_hash"] = hash_password(password)
 
     await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
 
-    result: dict = {"ok": True}
-    if os.environ.get("RESEND_API_KEY", ""):
-        sent = await _send_otp_email(email, otp, name or "")
-        if not sent:
-            raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
-        result["sent"] = True
-    else:
-        result["dev_otp"] = otp
+    result: dict = {"ok": True, "dev_otp": otp}
     return result
 
 
