@@ -237,16 +237,10 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
 
     await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
 
-    result: dict = {"ok": True}
-    can_email = os.environ.get("RESEND_API_KEY", "") or os.environ.get("SMTP_USER", "")
-    if can_email:
-        sent = await _send_otp_email(email, otp, name or "")
-        if not sent:
-            raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
-        result["sent"] = True
-    else:
-        result["dev_otp"] = otp
-    return result
+    sent = await _send_otp_email(email, otp, name or "")
+    if not sent:
+        raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
+    return {"ok": True, "sent": True}
 
 
 async def verify_otp(email: str, otp: str, purpose: str, response: Response) -> dict:
