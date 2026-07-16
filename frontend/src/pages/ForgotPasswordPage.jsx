@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Lock, ArrowLeft } from "lucide-react";
+import { Lock, ArrowLeft, Sparkles } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import PageLayout from "@/components/PageLayout";
 import { authSendOtp, resetPassword } from "@/lib/api";
@@ -10,22 +10,37 @@ export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState("email"); // email → otp → done
   const [email, setEmail] = useState("");
+  const [devOtp, setDevOtp] = useState("");
   const [otp, setOtp] = useState("");
   const [newPw, setNewPw] = useState("");
   const [loading, setLoading] = useState(false);
+  const autoRef = useRef(false);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
+    autoRef.current = false;
     try {
       const r = await authSendOtp({ email, purpose: "reset" });
-      toast.success(r.dev_otp ? `DEV OTP: ${r.dev_otp}` : "OTP sent to your email");
+      setDevOtp(r.dev_otp || "");
       setStep("otp");
+      if (r.dev_otp) {
+        toast.success("Dev mode — code shown below");
+      } else {
+        toast.success("OTP sent to your email");
+      }
     } catch (e) {
       toast.error(e?.response?.data?.detail || "Failed to send OTP");
     } finally { setLoading(false); }
   };
+
+  // Auto-fill dev OTP
+  useEffect(() => {
+    if (!devOtp || autoRef.current) return;
+    autoRef.current = true;
+    setOtp(devOtp);
+  }, [devOtp]);
 
   const handleReset = async (e) => {
     e.preventDefault();
@@ -70,7 +85,17 @@ export default function ForgotPasswordPage() {
 
             {step === "otp" && (
               <form onSubmit={handleReset} className="space-y-5">
-                <p className="text-sm text-[#555]">Enter the 6-digit code sent to {email}</p>
+                {devOtp ? (
+                  <div className="bg-amber-50 border border-amber-300 px-4 py-3 flex items-start gap-3">
+                    <Sparkles className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">Dev mode — no email service</p>
+                      <p className="text-sm text-amber-700">Code: <span className="font-mono font-black tracking-[0.3em]">{devOtp}</span></p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[#555]">Enter the 6-digit code sent to {email}</p>
+                )}
                 <div>
                   <label className="eyebrow text-[10px] text-[#777] uppercase tracking-[0.14em] block mb-1">OTP</label>
                   <input value={otp} onChange={(e) => setOtp(e.target.value)} maxLength={6} required

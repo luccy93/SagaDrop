@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Loader2, ArrowRight, ShieldCheck, RefreshCw, Mail } from "lucide-react";
+import { Loader2, ArrowRight, ShieldCheck, RefreshCw, Mail, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { formatApiErrorDetail } from "@/lib/api";
 import AuthLayout from "@/components/AuthLayout";
@@ -23,6 +23,7 @@ export default function SignupPage() {
   const [devOtp, setDevOtp]   = useState("");  // shown when Resend not configured
   const [otp, setOtp]         = useState("");
   const [countdown, setCountdown] = useState(0);
+  const autoVerifiedRef = useRef(false);
 
   const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,6 +34,25 @@ export default function SignupPage() {
     const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [countdown]);
+
+  // Auto-verify dev OTP
+  useEffect(() => {
+    if (!devOtp || autoVerifiedRef.current) return;
+    autoVerifiedRef.current = true;
+    setOtp(devOtp);
+    const t = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const u = await verifyOtp(email, devOtp, "signup");
+        toast.success(`Welcome to SagaDrop, ${u.name}.`);
+        navigate("/");
+      } catch (err) {
+        setError(formatApiErrorDetail(err.response?.data?.detail) || err.message);
+        setLoading(false);
+      }
+    }, 500);
+    return () => clearTimeout(t);
+  }, [devOtp]);
 
   // ── Step 1: Send OTP ──────────────────────────────────────────────────────
   const handleSendOtp = async (e) => {
@@ -196,11 +216,11 @@ export default function SignupPage() {
       {/* Dev-mode banner */}
       {devOtp && (
         <div className="mt-5 bg-amber-50 border border-amber-300 px-4 py-3 flex items-start gap-3">
-          <ShieldCheck className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+          <Sparkles className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">Dev mode — email not configured</p>
+            <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">Dev mode — verifying automatically</p>
             <p className="text-sm text-amber-700">
-              Your verification code is: <span className="font-mono font-black text-lg tracking-[0.3em]">{devOtp}</span>
+              Code <span className="font-mono font-black tracking-[0.3em]">{devOtp}</span> — no email service configured
             </p>
           </div>
         </div>
