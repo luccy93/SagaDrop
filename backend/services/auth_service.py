@@ -132,7 +132,7 @@ def _send_smtp(email: str, html: str, otp: str, name: str = "") -> bool:
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
     smtp_user = os.environ.get("SMTP_USER", "")
     smtp_pass = os.environ.get("SMTP_PASS", "")
-    smtp_from = os.environ.get("SMTP_FROM", smtp_user)
+    smtp_from = smtp_user
 
     msg = MIMEText(html, "html")
     msg["Subject"] = f"Your SagaDrop verification code: {otp}"
