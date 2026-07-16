@@ -1,4 +1,6 @@
 """Authentication & user business logic."""
+import asyncio
+import functools
 import hashlib
 import os
 import random
@@ -87,9 +89,6 @@ def _otp_html(otp: str, name: str = "") -> str:
   </p>
 </div>"""
 
-
-import asyncio
-import functools
 
 def _send_email_sync(email: str, otp: str, name: str = "") -> bool:
     """Synchronous email sender — runs in a thread to avoid blocking the event loop."""
