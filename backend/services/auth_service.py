@@ -124,7 +124,7 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
             msg["From"] = smtp_from
             msg["To"] = email
 
-            with smtplib.SMTP(smtp_host, smtp_port) as s:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
                 s.starttls()
                 if smtp_user:
                     s.login(smtp_user, smtp_pass)
