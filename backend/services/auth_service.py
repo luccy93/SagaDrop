@@ -159,7 +159,62 @@ async def login_user(email: str, password: str, request: Request, response: Resp
 
 async def send_otp(email: str, purpose: str, name: Optional[str] = None,
                    password: Optional[str] = None) -> dict:
-    return {"ok": True, "dev_otp": "hardcoded"}
+    if db is None:
+        raise HTTPException(503, "Database not configured")
+    email = email.lower().strip()
+
+    if purpose == "signup":
+        existing_user = await db.users.find_one({"email": email})
+        if existing_user:
+            raise HTTPException(409, "An account with this email already exists.")
+        if not name or not password:
+            raise HTTPException(422, "Name and password are required for signup.")
+        if len(password) < 6:
+            raise HTTPException(422, "Password must be at least 6 characters.")
+    elif purpose in ("login", "reset"):
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(404, "No account found with this email.")
+        if purpose == "reset" and not user.get("password_hash"):
+            raise HTTPException(400, "Cannot reset password for OAuth accounts. Use Google login.")
+    else:
+        raise HTTPException(422, "Invalid purpose.")
+
+    existing_otp = await db.otps.find_one({"email": email, "purpose": purpose})
+    if existing_otp and existing_otp.get("created_at"):
+        try:
+            created = datetime.fromisoformat(existing_otp["created_at"])
+            elapsed = (datetime.now(timezone.utc) - created).total_seconds()
+            if elapsed < 60:
+                raise HTTPException(429, f"Please wait {60 - int(elapsed)} seconds before requesting a new code.")
+        except ValueError:
+            pass
+
+    otp = _generate_otp()
+    now = datetime.now(timezone.utc)
+    doc = {
+        "email": email,
+        "purpose": purpose,
+        "otp_hash": _hash_otp(otp),
+        "expires_at": (now + timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(),
+        "created_at": now.isoformat(),
+        "attempts": 0,
+    }
+    if purpose == "signup":
+        doc["name"] = name.strip()
+        doc["password_hash"] = hash_password(password)
+
+    await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
+
+    result: dict = {"ok": True}
+    if os.environ.get("RESEND_API_KEY", ""):
+        sent = await _send_otp_email(email, otp, name or "")
+        if not sent:
+            raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
+        result["sent"] = True
+    else:
+        result["dev_otp"] = otp
+    return result
 
 
 async def verify_otp(email: str, otp: str, purpose: str, response: Response) -> dict:
