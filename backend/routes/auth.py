@@ -114,7 +114,10 @@ async def refresh(request: Request, response: Response):
 
 @router.post("/send-otp")
 async def send_otp_endpoint(inp: SendOtpInput):
-    return await send_otp(inp.email, inp.purpose, inp.name, inp.password)
+    try:
+        return await send_otp(inp.email, inp.purpose, inp.name, inp.password)
+    except Exception as e:
+        return {"ok": False, "error": str(e), "type": type(e).__name__}
 
 
 @router.post("/verify-otp")
