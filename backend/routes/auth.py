@@ -114,11 +114,6 @@ async def refresh(request: Request, response: Response):
 
 @router.post("/send-otp")
 async def send_otp_endpoint(inp: SendOtpInput):
-    import os, random
-    if inp.purpose == "signup":
-        if os.environ.get("RESEND_API_KEY", ""):
-            return await send_otp(inp.email, inp.purpose, inp.name, inp.password)
-        return {"ok": True, "dev_otp": f"{random.randint(0, 999999):06d}"}
     return await send_otp(inp.email, inp.purpose, inp.name, inp.password)
 
 

@@ -1,6 +1,4 @@
 """Authentication & user business logic."""
-import asyncio
-import functools
 import hashlib
 import os
 import random
@@ -90,35 +88,53 @@ def _otp_html(otp: str, name: str = "") -> str:
 </div>"""
 
 
-def _send_email_sync(email: str, otp: str, name: str = "") -> bool:
-    """Synchronous email sender — runs in a thread to avoid blocking the event loop."""
+async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
     html = _otp_html(otp, name)
     subject = f"Your SagaDrop verification code: {otp}"
 
+    # 1) Resend
     api_key = os.environ.get("RESEND_API_KEY", "")
-    if not api_key:
-        return False
+    if api_key:
+        try:
+            import resend
+            resend.api_key = api_key
+            resend.Emails.send({
+                "from": "SagaDrop <noreply@hakidrop.com>",
+                "to": [email],
+                "subject": subject,
+                "html": html,
+            })
+            return True
+        except Exception:
+            logger.warning("Resend failed, trying SMTP fallback")
 
-    try:
-        import resend
-        resend.api_key = api_key
-        resend.Emails.send({
-            "from": "SagaDrop <noreply@hakidrop.com>",
-            "to": [email],
-            "subject": subject,
-            "html": html,
-        })
-        return True
-    except Exception:
-        logger.warning("Resend failed")
+    # 2) SMTP fallback
+    smtp_host = os.environ.get("SMTP_HOST", "")
+    if smtp_host:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+            smtp_user = os.environ.get("SMTP_USER", "")
+            smtp_pass = os.environ.get("SMTP_PASS", "")
+            smtp_from = os.environ.get("SMTP_FROM", "noreply@sagadrop.com")
+
+            msg = MIMEText(html, "html")
+            msg["Subject"] = subject
+            msg["From"] = smtp_from
+            msg["To"] = email
+
+            with smtplib.SMTP(smtp_host, smtp_port) as s:
+                s.starttls()
+                if smtp_user:
+                    s.login(smtp_user, smtp_pass)
+                s.send_message(msg)
+            return True
+        except Exception as exc:
+            logger.warning("SMTP send failed: %s", exc)
+            return False
 
     return False
-
-
-async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
-    """Send OTP email in a thread so it never blocks the event loop."""
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, functools.partial(_send_email_sync, email, otp, name))
 
 
 # ─── Public API ───────────────────────────────────────────────────────────────
@@ -169,66 +185,58 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
         raise HTTPException(503, "Database not configured")
     email = email.lower().strip()
 
-    try:
-        if purpose == "signup":
-            existing_user = await db.users.find_one({"email": email})
-            if existing_user:
-                raise HTTPException(409, "An account with this email already exists.")
-            if not name or not password:
-                raise HTTPException(422, "Name and password are required for signup.")
-            if len(password) < 6:
-                raise HTTPException(422, "Password must be at least 6 characters.")
-        elif purpose in ("login", "reset"):
-            user = await db.users.find_one({"email": email})
-            if not user:
-                raise HTTPException(404, "No account found with this email.")
-            if purpose == "reset" and not user.get("password_hash"):
-                raise HTTPException(400, "Cannot reset password for OAuth accounts. Use Google login.")
-        else:
-            raise HTTPException(422, "Invalid purpose.")
-
-        # Rate-limit: 1 OTP per 60 seconds
-        existing_otp = await db.otps.find_one({"email": email, "purpose": purpose})
-        if existing_otp and existing_otp.get("created_at"):
-            try:
-                created = datetime.fromisoformat(existing_otp["created_at"])
-                elapsed = (datetime.now(timezone.utc) - created).total_seconds()
-                if elapsed < 60:
-                    raise HTTPException(429, f"Please wait {60 - int(elapsed)} seconds before requesting a new code.")
-            except ValueError:
-                pass
-
-        otp = _generate_otp()
-        now = datetime.now(timezone.utc)
-        doc = {
-            "email": email,
-            "purpose": purpose,
-            "otp_hash": _hash_otp(otp),
-            "expires_at": (now + timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(),
-            "created_at": now.isoformat(),
-            "attempts": 0,
-        }
-        if purpose == "signup":
-            doc["name"] = name.strip()
-            doc["password_hash"] = hash_password(password)
-
-        await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(500, f"OTP send internal error: {type(exc).__name__}: {exc}")
-
-    result: dict = {"ok": True}
-    if os.environ.get("RESEND_API_KEY", ""):
-        try:
-            sent = await asyncio.wait_for(_send_otp_email(email, otp, name or ""), timeout=20)
-        except asyncio.TimeoutError:
-            logger.warning("OTP email send timed out")
-            sent = False
-        if not sent:
-            raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
-        result["sent"] = sent
+    if purpose == "signup":
+        existing_user = await db.users.find_one({"email": email})
+        if existing_user:
+            raise HTTPException(409, "An account with this email already exists.")
+        if not name or not password:
+            raise HTTPException(422, "Name and password are required for signup.")
+        if len(password) < 6:
+            raise HTTPException(422, "Password must be at least 6 characters.")
+    elif purpose in ("login", "reset"):
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(404, "No account found with this email.")
+        if purpose == "reset" and not user.get("password_hash"):
+            raise HTTPException(400, "Cannot reset password for OAuth accounts. Use Google login.")
     else:
+        raise HTTPException(422, "Invalid purpose.")
+
+    # Rate-limit: 1 OTP per 60 seconds
+    existing_otp = await db.otps.find_one({"email": email, "purpose": purpose})
+    if existing_otp and existing_otp.get("created_at"):
+        try:
+            created = datetime.fromisoformat(existing_otp["created_at"])
+            elapsed = (datetime.now(timezone.utc) - created).total_seconds()
+            if elapsed < 60:
+                raise HTTPException(429, f"Please wait {60 - int(elapsed)} seconds before requesting a new code.")
+        except ValueError:
+            pass
+
+    otp = _generate_otp()
+    now = datetime.now(timezone.utc)
+    doc = {
+        "email": email,
+        "purpose": purpose,
+        "otp_hash": _hash_otp(otp),
+        "expires_at": (now + timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(),
+        "created_at": now.isoformat(),
+        "attempts": 0,
+    }
+    if purpose == "signup":
+        doc["name"] = name.strip()
+        doc["password_hash"] = hash_password(password)
+
+    await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
+
+    dev_mode = not os.environ.get("RESEND_API_KEY", "")
+    sent = await _send_otp_email(email, otp, name or "")
+
+    if not sent and not dev_mode:
+        raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
+
+    result: dict = {"ok": True, "sent": sent}
+    if dev_mode:
         result["dev_otp"] = otp
     return result
 
