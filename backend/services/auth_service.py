@@ -1,4 +1,5 @@
 """Authentication & user business logic."""
+import asyncio
 import hashlib
 import os
 import random
@@ -89,52 +90,29 @@ def _otp_html(otp: str, name: str = "") -> str:
 
 
 async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
-    html = _otp_html(otp, name)
-    subject = f"Your SagaDrop verification code: {otp}"
-
-    # 1) Resend
     api_key = os.environ.get("RESEND_API_KEY", "")
-    if api_key:
-        try:
-            import resend
-            resend.api_key = api_key
-            resend.Emails.send({
-                "from": "SagaDrop <noreply@hakidrop.com>",
-                "to": [email],
-                "subject": subject,
-                "html": html,
-            })
-            return True
-        except Exception:
-            logger.warning("Resend failed, trying SMTP fallback")
+    if not api_key:
+        return False
+    html = _otp_html(otp, name)
+    import functools
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, functools.partial(_send_resend, api_key, email, html, otp, name))
+    except Exception:
+        logger.warning("Resend failed")
+        return False
 
-    # 2) SMTP fallback
-    smtp_host = os.environ.get("SMTP_HOST", "")
-    if smtp_host:
-        try:
-            import smtplib
-            from email.mime.text import MIMEText
-            smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-            smtp_user = os.environ.get("SMTP_USER", "")
-            smtp_pass = os.environ.get("SMTP_PASS", "")
-            smtp_from = os.environ.get("SMTP_FROM", "noreply@sagadrop.com")
 
-            msg = MIMEText(html, "html")
-            msg["Subject"] = subject
-            msg["From"] = smtp_from
-            msg["To"] = email
-
-            with smtplib.SMTP(smtp_host, smtp_port) as s:
-                s.starttls()
-                if smtp_user:
-                    s.login(smtp_user, smtp_pass)
-                s.send_message(msg)
-            return True
-        except Exception as exc:
-            logger.warning("SMTP send failed: %s", exc)
-            return False
-
-    return False
+def _send_resend(api_key: str, email: str, html: str, otp: str, name: str = "") -> bool:
+    import resend
+    resend.api_key = api_key
+    resend.Emails.send({
+        "from": "SagaDrop <noreply@hakidrop.com>",
+        "to": [email],
+        "subject": f"Your SagaDrop verification code: {otp}",
+        "html": html,
+    })
+    return True
 
 
 # ─── Public API ───────────────────────────────────────────────────────────────
@@ -229,14 +207,13 @@ async def send_otp(email: str, purpose: str, name: Optional[str] = None,
 
     await db.otps.replace_one({"email": email, "purpose": purpose}, doc, upsert=True)
 
-    dev_mode = not os.environ.get("RESEND_API_KEY", "")
-    sent = await _send_otp_email(email, otp, name or "")
-
-    if not sent and not dev_mode:
-        raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
-
-    result: dict = {"ok": True, "sent": sent}
-    if dev_mode:
+    result: dict = {"ok": True}
+    if os.environ.get("RESEND_API_KEY", ""):
+        sent = await _send_otp_email(email, otp, name or "")
+        if not sent:
+            raise HTTPException(503, "Failed to send verification email. Please try again shortly.")
+        result["sent"] = True
+    else:
         result["dev_otp"] = otp
     return result
 
