@@ -159,13 +159,7 @@ async def login_user(email: str, password: str, request: Request, response: Resp
 
 async def send_otp(email: str, purpose: str, name: Optional[str] = None,
                    password: Optional[str] = None) -> dict:
-    if db is None:
-        raise HTTPException(503, "Database not configured")
-    email = email.lower().strip()
-
-    # --- Skip DB entirely — just generate and return OTP ---
-    otp = _generate_otp()
-    return {"ok": True, "dev_otp": otp, "step": "no-db"}
+    return {"ok": True, "dev_otp": "hardcoded"}
 
 
 async def verify_otp(email: str, otp: str, purpose: str, response: Response) -> dict:
