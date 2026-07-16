@@ -95,45 +95,22 @@ def _send_email_sync(email: str, otp: str, name: str = "") -> bool:
     html = _otp_html(otp, name)
     subject = f"Your SagaDrop verification code: {otp}"
 
-    # 1) Resend
     api_key = os.environ.get("RESEND_API_KEY", "")
-    if api_key:
-        try:
-            import resend
-            resend.api_key = api_key
-            resend.Emails.send({
-                "from": "SagaDrop <noreply@hakidrop.com>",
-                "to": [email],
-                "subject": subject,
-                "html": html,
-            })
-            return True
-        except Exception:
-            logger.warning("Resend failed")
+    if not api_key:
+        return False
 
-    # 2) SMTP fallback — only if SMTP_USER is set
-    smtp_host = os.environ.get("SMTP_HOST", "")
-    smtp_user = os.environ.get("SMTP_USER", "")
-    if smtp_host and smtp_user:
-        try:
-            import smtplib
-            from email.mime.text import MIMEText
-            smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-            smtp_pass = os.environ.get("SMTP_PASS", "")
-            smtp_from = os.environ.get("SMTP_FROM", "noreply@sagadrop.com")
-
-            msg = MIMEText(html, "html")
-            msg["Subject"] = subject
-            msg["From"] = smtp_from
-            msg["To"] = email
-
-            with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as s:
-                s.starttls()
-                s.login(smtp_user, smtp_pass)
-                s.send_message(msg)
-            return True
-        except Exception as exc:
-            logger.warning("SMTP send failed: %s", exc)
+    try:
+        import resend
+        resend.api_key = api_key
+        resend.Emails.send({
+            "from": "SagaDrop <noreply@hakidrop.com>",
+            "to": [email],
+            "subject": subject,
+            "html": html,
+        })
+        return True
+    except Exception:
+        logger.warning("Resend failed")
 
     return False
 
