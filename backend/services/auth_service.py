@@ -106,16 +106,16 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
             })
             return True
         except Exception:
-            logger.warning("Resend failed, trying SMTP fallback")
+            logger.warning("Resend failed")
 
-    # 2) SMTP fallback
+    # 2) SMTP fallback — only attempt if SMTP_USER is also set (fully configured)
     smtp_host = os.environ.get("SMTP_HOST", "")
-    if smtp_host:
+    smtp_user = os.environ.get("SMTP_USER", "")
+    if smtp_host and smtp_user:
         try:
             import smtplib
             from email.mime.text import MIMEText
             smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-            smtp_user = os.environ.get("SMTP_USER", "")
             smtp_pass = os.environ.get("SMTP_PASS", "")
             smtp_from = os.environ.get("SMTP_FROM", "noreply@sagadrop.com")
 
@@ -126,13 +126,11 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
 
             with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as s:
                 s.starttls()
-                if smtp_user:
-                    s.login(smtp_user, smtp_pass)
+                s.login(smtp_user, smtp_pass)
                 s.send_message(msg)
             return True
         except Exception as exc:
             logger.warning("SMTP send failed: %s", exc)
-            return False
 
     return False
 
