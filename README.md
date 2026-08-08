@@ -1,90 +1,170 @@
-# SagaDrop — Premium Story Book Marketplace
+# 📚 SagaDrop — Premium Story Book Marketplace
 
-Full-stack book store: **React (Vite) frontend** on Vercel, **FastAPI backend** on Render, **MongoDB (Atlas)**, and **Redis** on the free tier.
+<div align="center">
 
----
+<img src="./frontend/public/sagadrop-logo.png" alt="SagaDrop Logo" width="140"/>
 
-## Live URLs
+### Discover Stories. Collect Worlds. Begin Your Next Adventure.
 
-- Frontend: https://saga-drop-gules.vercel.app
-- Backend: https://sagadrop-backend.onrender.com
-- Health check: https://sagadrop-backend.onrender.com/api/health
+A modern full-stack story book marketplace built for readers who want a beautiful, immersive, and seamless way to discover and purchase books.
 
----
+<br/>
 
-## Repository
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-SagaDrop-7C3AED?style=for-the-badge)](https://saga-drop-gules.vercel.app)
+[![Backend](https://img.shields.io/badge/⚡_API-FastAPI-009688?style=for-the-badge)](https://sagadrop-backend.onrender.com)
+[![Health](https://img.shields.io/badge/🟢_API_Status-Healthy-22C55E?style=for-the-badge)](https://sagadrop-backend.onrender.com/api/health)
+[![GitHub](https://img.shields.io/badge/💻_Source-GitHub-181717?style=for-the-badge)](https://github.com/luccy93/SagaDrop)
 
-- GitHub: https://github.com/luccy93/SagaDrop (author identity: `luccy93 <devadraprasadkumar@gmail.com>`)
-
----
-
-## Production Setup (all done)
-
-### Email delivery — Brevo (primary)
-Render blocks outbound SMTP (587/465) on its free tier, so Gmail SMTP fails from Render. Emails are sent over HTTPS via the Brevo API instead (300 free emails/day). Order of senders: **Brevo → Gmail SMTP (fallback) → Resend (fallback)**.
-
-| Env var | Value |
-|---|---|
-| `BREVO_API_KEY` | `xkeysib-...` (set in Render; DO NOT commit) |
-| `BREVO_FROM` | `devadraprasadkumar@gmail.com` |
-| `BREVO_FROM_NAME` | `SagaDrop` |
-
-- Verify sender address in Brevo dashboard (no domain needed).
-- SMTP vars (`SMTP_HOST`, `SMTP_PORT=465`, `SMTP_USER=pookrish81@gmail.com`, `SMTP_PASS=<app password>`) still exist as fallback for local/dev. Gmail App Passwords rotate; regenerate at myaccount.google.com → App passwords.
-- `RESEND_API_KEY` / `RESEND_FROM` remain as last-resort fallback. Resend free tier only delivers to the account owner's verified address without a domain.
-
-### Payments — Razorpay (UPI / Indian cards) + Stripe (cards)
-| Env var | Value |
-|---|---|
-| `RAZORPAY_KEY_ID` | `rzp_live_...` (set in Render; DO NOT commit) |
-| `RAZORPAY_KEY_SECRET` | set in Render; DO NOT commit |
-| `STRIPE_SECRET_KEY` | `sk_...` (set in Render; DO NOT commit) |
-| `STRIPE_WEBHOOK_SECRET` | (set if added — Developer → Webhooks → `https://sagadrop-backend.onrender.com/api/checkout/stripe/webhook`, event `checkout.session.completed`) |
-
-- Test cards: `4242 4242 4242 4242` (Stripe) — any future expiry, any CVV. Razorpay UPI test: `success@razorpay`.
-- Razorpay verification happens client-side (`/api/checkout/razorpay/verify`); a webhook is NOT required and would not parse correctly at that endpoint.
-
-### Authentication
-- **Email OTP** (signup, login, password reset): 6-digit code sent via Brevo; 10-min expiry, 5 attempts, 60s resend cooldown, lockout after 5 failed logins.
-- **Google OAuth**: `GOOGLE_CLIENT_ID` set in Render (Client ID from Google Cloud Console, published to production). Authorized origins: `https://saga-drop-gules.vercel.app`, `http://localhost:3000`.
-- Admin: `ADMIN_EMAIL=admin@sagadrop.com`, `ADMIN_PASSWORD=<set in Render>`. Admin user auto-created on backend startup.
-
-### Core env vars (Render → Environment)
-`MONGO_URL`, `REDIS_URL`, `DB_NAME=sagadrop`, `JWT_SECRET` (long random string), `CORS_ORIGINS` (Vercel + localhost), `GOOGLE_CLIENT_ID`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `BREVO_API_KEY`, `BREVO_FROM`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `STRIPE_SECRET_KEY`. SMTP vars kept only as fallback.
-
-⚠️ **Never commit secrets.** API keys live only in Render Environment (masked). If a key leaks, regenerate it.
-
-### Cold-start keep-alive
-Free Render instances sleep after ~15 min idle. A UptimeRobot monitor pings `https://sagadrop-backend.onrender.com/api/health` every 5 minutes to keep the backend warm. Alternative: cron-job.org.
+</div>
 
 ---
 
-## Local Development
+## ✨ Overview
 
-### Backend
-```bash
-cd backend
-python -m venv .venv && .venv\Scripts\activate   # Windows
-pip install -r requirements.txt
-copy .env.example .env                          # fill MONGO_URL, JWT_SECRET, etc.
-uvicorn server:app --reload --port 8000
-```
+**SagaDrop** is a production-deployed full-stack story book marketplace designed around a premium reading and shopping experience.
 
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev     # http://localhost:3000
-```
+The platform combines:
 
-Frontend proxies `/api` to the backend via `vercel.json` (production) and Vite config (dev).
+- 📚 Story book discovery
+- 🔎 Product search
+- 🛒 Shopping cart
+- ❤️ Wishlist
+- 🔐 Secure authentication
+- 📧 Email OTP verification
+- 🔑 Google OAuth
+- 💳 Razorpay payments
+- 💳 Stripe payments
+- 📦 Order management
+- 👤 User accounts
+- 🛠️ Admin management
+- ⚡ Redis-backed services
+- 🗄️ MongoDB Atlas
+- ☁️ Vercel + Render deployment
+
+The project is designed as a real-world production application rather than a static frontend demo.
 
 ---
 
-## Testing
+# 🌐 Live Application
 
-- Backend: `cd backend && pytest`
-- Frontend: `cd frontend && npm test`
+### 🚀 Frontend
 
-## Tech Stack
-React 18 · Vite · Tailwind CSS · framer-motion · FastAPI · Motor (MongoDB) · Redis · Brevo · Razorpay · Stripe · Google OAuth · Sentry (optional) · PostHog (optional) · Meilisearch (optional)
+**SagaDrop Web Application**
+
+https://saga-drop-gules.vercel.app
+
+### ⚡ Backend API
+
+**FastAPI Production API**
+
+https://sagadrop-backend.onrender.com
+
+### 🟢 API Health
+
+https://sagadrop-backend.onrender.com/api/health
+
+### 💻 Source Code
+
+https://github.com/luccy93/SagaDrop
+
+---
+
+# 🖼️ Product Preview
+
+> Replace the image paths below with your actual screenshots.
+
+## 🏠 Landing Page
+
+<p align="center">
+  <img src="./docs/screenshots/home.png" width="90%" alt="SagaDrop Home Page"/>
+</p>
+
+SagaDrop uses a cinematic, premium interface focused on storytelling, discovery, and visual book browsing.
+
+---
+
+## 📚 Book Discovery
+
+<p align="center">
+  <img src="./docs/screenshots/books.png" width="90%" alt="SagaDrop Book Catalog"/>
+</p>
+
+Users can browse the available collection and discover books through a clean marketplace interface.
+
+---
+
+## 📖 Book Details
+
+<p align="center">
+  <img src="./docs/screenshots/book-details.png" width="90%" alt="SagaDrop Book Details"/>
+</p>
+
+Each book receives a dedicated product experience containing its cover, description, pricing, and purchasing actions.
+
+---
+
+## 🛒 Shopping Cart
+
+<p align="center">
+  <img src="./docs/screenshots/cart.png" width="90%" alt="SagaDrop Shopping Cart"/>
+</p>
+
+Users can review selected books before proceeding to checkout.
+
+---
+
+## 💳 Checkout
+
+<p align="center">
+  <img src="./docs/screenshots/checkout.png" width="90%" alt="SagaDrop Checkout"/>
+</p>
+
+The checkout system supports multiple payment providers for Indian and international customers.
+
+---
+
+## 👤 User Account
+
+<p align="center">
+  <img src="./docs/screenshots/profile.png" width="90%" alt="SagaDrop User Profile"/>
+</p>
+
+Users can manage their account and access their order-related information.
+
+---
+
+## 🛠️ Admin Dashboard
+
+<p align="center">
+  <img src="./docs/screenshots/admin.png" width="90%" alt="SagaDrop Admin Dashboard"/>
+</p>
+
+Administrators can manage the marketplace and monitor platform activity.
+
+---
+
+# 🚀 Core Features
+
+## 🔐 Authentication
+
+SagaDrop provides multiple authentication mechanisms.
+
+### Email Authentication
+
+- User registration
+- Email OTP verification
+- Login OTP
+- Password reset
+- 6-digit verification codes
+- 10-minute OTP expiration
+- 60-second resend cooldown
+- Failed-attempt protection
+
+### Google Authentication
+
+Google OAuth is supported for production authentication.
+
+Authorized production origin:
+
+```text
+https://saga-drop-gules.vercel.app
