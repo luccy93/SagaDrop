@@ -62,11 +62,11 @@ services:
       MEILI_URL: http://meilisearch:7700
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-dev-master-key}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
-      SMTP_HOST: ${SMTP_HOST:-}
+      RESEND_FROM: ${RESEND_FROM:-SagaDrop <onboarding@resend.dev>}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
-      SMTP_FROM: ${SMTP_FROM:-SagaDrop <noreply@sagadrop.com>}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@sagadrop.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-SagaDrop@2026Admin!}
       JWT_SECRET: ${JWT_SECRET:-docX52ZegEbOQVUT3nhWfJjiItvHYPzsFL47kaG1yC98qrmMANBSDxwR0ulK6p}

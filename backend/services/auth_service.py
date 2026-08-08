@@ -94,21 +94,21 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
     import functools
     loop = asyncio.get_event_loop()
 
-    # 1) Resend
-    api_key = os.environ.get("RESEND_API_KEY", "")
-    if api_key:
-        try:
-            return await loop.run_in_executor(None, functools.partial(_send_resend, api_key, email, html, otp, name))
-        except Exception:
-            logger.warning("Resend failed, trying SMTP")
-
-    # 2) SMTP fallback
+    # 1) Gmail SMTP (primary)
     smtp_user = os.environ.get("SMTP_USER", "")
     if smtp_user:
         try:
             return await loop.run_in_executor(None, functools.partial(_send_smtp, email, html, otp, name))
-        except Exception:
-            logger.warning("SMTP failed")
+        except Exception as e:
+            logger.warning("SMTP failed: %r, trying Resend", e)
+
+    # 2) Resend (fallback)
+    api_key = os.environ.get("RESEND_API_KEY", "")
+    if api_key:
+        try:
+            return await loop.run_in_executor(None, functools.partial(_send_resend, api_key, email, html, otp, name))
+        except Exception as e:
+            logger.warning("Resend failed: %r", e)
 
     return False
 
@@ -116,8 +116,9 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
 def _send_resend(api_key: str, email: str, html: str, otp: str, name: str = "") -> bool:
     import resend
     resend.api_key = api_key
+    sender = os.environ.get("RESEND_FROM", "SagaDrop <onboarding@resend.dev>")
     resend.Emails.send({
-        "from": "SagaDrop <noreply@hakidrop.com>",
+        "from": sender,
         "to": [email],
         "subject": f"Your SagaDrop verification code: {otp}",
         "html": html,
