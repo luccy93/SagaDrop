@@ -94,7 +94,15 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
     import functools
     loop = asyncio.get_event_loop()
 
-    # 1) Gmail SMTP (primary)
+    # 1) Brevo API over HTTPS (works on Render, which blocks outbound SMTP)
+    brevo_key = os.environ.get("BREVO_API_KEY", "")
+    if brevo_key:
+        try:
+            return await loop.run_in_executor(None, functools.partial(_send_brevo, brevo_key, email, html, otp, name))
+        except Exception as e:
+            logger.warning("Brevo failed: %r, trying SMTP", e)
+
+    # 2) Gmail SMTP (fallback)
     smtp_user = os.environ.get("SMTP_USER", "")
     if smtp_user:
         try:
@@ -102,7 +110,7 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
         except Exception as e:
             logger.warning("SMTP failed: %r, trying Resend", e)
 
-    # 2) Resend (fallback)
+    # 3) Resend (fallback)
     api_key = os.environ.get("RESEND_API_KEY", "")
     if api_key:
         try:
@@ -111,6 +119,30 @@ async def _send_otp_email(email: str, otp: str, name: str = "") -> bool:
             logger.warning("Resend failed: %r", e)
 
     return False
+
+
+def _send_brevo(api_key: str, email: str, html: str, otp: str, name: str = "") -> bool:
+    import requests as _rq
+    sender_email = os.environ.get("BREVO_FROM", "devadraprasadkumar@gmail.com")
+    sender_name = os.environ.get("BREVO_FROM_NAME", "SagaDrop")
+    resp = _rq.post(
+        "https://api.brevo.com/v3/smtp/email",
+        headers={
+            "api-key": api_key,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        json={
+            "sender": {"email": sender_email, "name": sender_name},
+            "to": [{"email": email}],
+            "subject": f"Your SagaDrop verification code: {otp}",
+            "htmlContent": html,
+        },
+        timeout=30,
+    )
+    if resp.status_code not in (200, 201, 202):
+        raise RuntimeError(f"Brevo error {resp.status_code}: {resp.text[:300]}")
+    return True
 
 
 def _send_resend(api_key: str, email: str, html: str, otp: str, name: str = "") -> bool:
