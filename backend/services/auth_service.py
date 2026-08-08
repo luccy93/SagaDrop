@@ -131,7 +131,7 @@ def _send_smtp(email: str, html: str, otp: str, name: str = "") -> bool:
     import socket
     from email.mime.text import MIMEText
     smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
     smtp_user = os.environ.get("SMTP_USER", "")
     smtp_pass = os.environ.get("SMTP_PASS", "")
     smtp_from = smtp_user
@@ -146,13 +146,21 @@ def _send_smtp(email: str, html: str, otp: str, name: str = "") -> bool:
     infos = socket.getaddrinfo(smtp_host, smtp_port, socket.AF_INET, socket.SOCK_STREAM)
     host_ip, resolved_port = infos[0][4][0], infos[0][4][1]
 
-    with smtplib.SMTP(timeout=15) as s:
-        s._host = smtp_host
-        s.connect(host_ip, resolved_port)
-        s.ehlo()
-        s.starttls()
-        s.login(smtp_user, smtp_pass)
-        s.send_message(msg)
+    if smtp_port == 465:
+        # Implicit TLS (port 465) — works on some networks where STARTTLS (587) is blocked.
+        with smtplib.SMTP_SSL(timeout=15) as s:
+            s._host = smtp_host
+            s.connect(host_ip, resolved_port)
+            s.login(smtp_user, smtp_pass)
+            s.send_message(msg)
+    else:
+        with smtplib.SMTP(timeout=15) as s:
+            s._host = smtp_host
+            s.connect(host_ip, resolved_port)
+            s.ehlo()
+            s.starttls()
+            s.login(smtp_user, smtp_pass)
+            s.send_message(msg)
     return True
 
 
