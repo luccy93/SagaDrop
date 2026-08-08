@@ -128,6 +128,7 @@ def _send_resend(api_key: str, email: str, html: str, otp: str, name: str = "") 
 
 def _send_smtp(email: str, html: str, otp: str, name: str = "") -> bool:
     import smtplib
+    import socket
     from email.mime.text import MIMEText
     smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
@@ -140,7 +141,15 @@ def _send_smtp(email: str, html: str, otp: str, name: str = "") -> bool:
     msg["From"] = smtp_from
     msg["To"] = email
 
-    with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as s:
+    # Force IPv4 — cloud instances often lack an IPv6 route, which causes
+    # OSError(101, 'Network is unreachable') when smtplib picks the AAAA record.
+    infos = socket.getaddrinfo(smtp_host, smtp_port, socket.AF_INET, socket.SOCK_STREAM)
+    host_ip, resolved_port = infos[0][4][0], infos[0][4][1]
+
+    with smtplib.SMTP(timeout=15) as s:
+        s._host = smtp_host
+        s.connect(host_ip, resolved_port)
+        s.ehlo()
         s.starttls()
         s.login(smtp_user, smtp_pass)
         s.send_message(msg)
